@@ -1,0 +1,18 @@
+{
+  "name": "AvEng — авиационный английский",
+  "short_name": "AvEng",
+  "description": "AvEng — игровой тренажёр авиационного английского и радиофразеологии для диспетчеров УВД, пилотов и бортпроводников. По ICAO Doc 4444, Doc 9432, Annex 1.",
+  "lang": "ru",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06121a",
+  "theme_color": "#06121a",
+  "categories": ["education"],
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
