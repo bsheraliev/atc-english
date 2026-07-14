@@ -60,6 +60,34 @@ html,body{margin:0;padding:0;background:
   color:var(--amber);background:rgba(0,0,0,.25);border:1px solid var(--amber);
   border-radius:8px;padding:2px 6px;line-height:1}
 
+/* Лицензия */
+.licbar{display:flex;align-items:center;gap:10px;border-radius:14px;padding:11px 13px;margin-bottom:14px;font-size:13px}
+.licbar.demo{background:rgba(255,193,77,.10);border:1px solid var(--amber);color:var(--txt)}
+.licbar.ok{background:rgba(39,224,160,.10);border:1px solid var(--green);color:var(--txt);font-weight:600}
+.licbar-txt{flex:1;line-height:1.4}
+.licbtn{white-space:nowrap;background:var(--amber);color:#06121a;border:none;border-radius:10px;
+  padding:8px 13px;font-size:12.5px;font-weight:700;cursor:pointer}
+.licbtn:active{transform:scale(.96)}
+.tile.locked{position:relative;opacity:.65;border-style:dashed}
+.tile.locked:hover{border-color:var(--amber)}
+.tile.locked .ti,.tile.locked .tt,.tile.locked .ts{filter:grayscale(.7)}
+.lockbadge{position:absolute;top:7px;right:7px;font-size:9px;font-weight:700;letter-spacing:.2px;
+  color:var(--amber);background:rgba(0,0,0,.25);border:1px solid var(--amber);border-radius:8px;padding:2px 6px;line-height:1}
+.unlock{text-align:center;padding:8px 4px}
+.unlock-hero{font-size:52px;margin:12px 0 6px}
+.unlock h2{margin:0 0 8px;font-size:20px}
+.unlock-sub{color:var(--dim);font-size:13.5px;line-height:1.5;margin:0 auto 18px;max-width:360px}
+.unlock-form{display:flex;flex-direction:column;gap:10px;max-width:340px;margin:0 auto}
+#licCode{background:var(--bg2);border:1.5px solid var(--line);color:var(--txt);border-radius:12px;
+  padding:13px;font-size:15px;text-align:center;letter-spacing:.5px}
+#licCode:focus{outline:none;border-color:var(--green)}
+.unlock .primary{background:var(--green);color:#06121a;border:none;border-radius:12px;padding:13px;
+  font-size:15px;font-weight:700;cursor:pointer}
+.unlock .primary:disabled{opacity:.6;cursor:default}
+.unlock-msg{min-height:22px;margin:12px 0;font-size:13.5px}
+.unlock-msg .err{color:var(--red);font-weight:600}
+.unlock-note{color:var(--dim);font-size:12.5px;line-height:1.6;margin-top:14px}
+
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .ghost{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:14px;
   padding:13px;font-size:14px;font-weight:600;cursor:pointer}
@@ -337,6 +365,7 @@ html,body{margin:0;padding:0;background:
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="./i18n.js"></script>
 <script src="./data.js"></script>
+<script src="./license.js"></script>
 <script src="./app.js"></script>
 </body>
 </html>

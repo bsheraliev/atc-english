@@ -10,3 +10,6 @@ Thumbs.db
 # черновик локализации (интегрируется отдельно)
 i18n.draft.json
 data.src.js
+
+# ключ AES полной базы — НЕ публиковать (data.full.enc публичный, он коммитится)
+.aveng-fullkey

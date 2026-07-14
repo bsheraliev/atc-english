@@ -254,12 +254,14 @@ function renderHome() {
       <span>🔥 <b>${state.daily.streak}</b> ${t("дн.")}</span>
     </div>
 
+    ${licenseBanner()}
     <div class="menu">
-      ${MENU.filter(m => m.roles.indexOf("all") >= 0 || m.roles.indexOf(state.role) >= 0).map((m, i) =>
-        tile(m.go, m.icon, t(m.title), m.go === "mistakes"
+      ${MENU.filter(m => m.roles.indexOf("all") >= 0 || m.roles.indexOf(state.role) >= 0).map((m, i) => {
+        if (window.AvEngLic && AvEngLic.locked(m.go)) return lockedTile(m.icon, t(m.title), t(m.sub));
+        return tile(m.go, m.icon, t(m.title), m.go === "mistakes"
           ? (mistakeCount() ? mistakeCount() + " " + t("на повторение") : t("ошибок пока нет"))
-          : t(m.sub), isWip(m.go, i))
-      ).join("")}
+          : t(m.sub), isWip(m.go, i));
+      }).join("")}
     </div>
 
     <div class="row2">
@@ -295,8 +297,70 @@ function tile(go, icon, title, sub, wip) {
 }
 function wipToast() { toast(t("Раздел на стадии разработки — скоро будет доступен"), "warn"); }
 
+/* ===========================================================================
+   ЛИЦЕНЗИЯ — баннер, заблокированные разделы, экран ввода кода организации
+   =========================================================================== */
+function licenseBanner() {
+  if (!window.AvEngLic) return "";
+  if (AvEngLic.isFull()) {
+    const org = AvEngLic.org(), exp = AvEngLic.expires();
+    return `<div class="licbar ok">✅ ${t("Полный доступ")}${org ? " · " + org : ""}${exp ? " · " + t("до") + " " + exp : ""}</div>`;
+  }
+  const n = (DATA.quiz || []).length;
+  return `<div class="licbar demo">
+    <div class="licbar-txt">🔒 ${t("Демо-версия")} · ${n} ${t("вопр.")} ${t("из")} 187 + ${t("радиоалфавит")}. ${t("Полный курс — по коду организации.")}</div>
+    <button class="licbtn" onclick="renderUnlock()">${t("Ввести код")}</button>
+  </div>`;
+}
+function lockedTile(icon, title, sub) {
+  return `<button class="tile locked" onclick="renderUnlock()"><span class="lockbadge">🔒 ${t("по лицензии")}</span><span class="ti">${icon}</span><span class="tt">${title}</span><span class="ts">${sub}</span></button>`;
+}
+function renderUnlock() {
+  track("open/unlock");
+  app.innerHTML = `${topbar(t("Полный доступ"))}
+  <div class="unlock">
+    <div class="unlock-hero">✈🔓</div>
+    <h2>${t("Полный курс AvEng")}</h2>
+    <p class="unlock-sub">${t("187 вопросов по 13 темам, радиообмен, аудирование и экзамен ELPET/TEA — по ICAO Doc 4444/9432 и Annex 1. Доступ выдаётся организации по лицензии.")}</p>
+    <div class="unlock-form">
+      <input id="licCode" type="text" autocomplete="off" placeholder="${t("Код организации")}" />
+      <button class="primary" id="licGo" onclick="doUnlock()">${t("Разблокировать")}</button>
+    </div>
+    <div id="licMsg" class="unlock-msg"></div>
+    <p class="unlock-note">${t("Нет кода? Напишите нам — подключим вашу организацию:")}<br><b>b.sheraliev@gmail.com</b></p>
+  </div>`;
+  const inp = document.getElementById("licCode");
+  if (inp) { inp.focus(); inp.addEventListener("keydown", e => { if (e.key === "Enter") doUnlock(); }); }
+}
+function doUnlock() {
+  const inp = document.getElementById("licCode"), btn = document.getElementById("licGo"), msg = document.getElementById("licMsg");
+  const code = (inp && inp.value || "").trim();
+  if (!code) { if (msg) msg.innerHTML = `<span class="err">${t("Введите код")}</span>`; return; }
+  if (btn) { btn.disabled = true; btn.textContent = t("Проверка…"); }
+  if (msg) msg.innerHTML = "";
+  AvEngLic.unlock(code).then(res => {
+    if (res.ok) {
+      if (typeof tgHaptic === "function") tgHaptic("success");
+      toast(t("Доступ открыт") + (res.org ? " · " + res.org : ""), "ok");
+      renderHome();
+    } else {
+      const map = {
+        invalid: t("Код не найден. Проверьте правильность."),
+        revoked: t("Лицензия отключена. Обратитесь к нам."),
+        expired: t("Срок лицензии истёк") + (res.expires ? " (" + res.expires + ")" : "") + ". " + t("Обратитесь для продления."),
+        network: t("Нет связи с сервером. Проверьте интернет."),
+        empty: t("Введите код")
+      };
+      if (btn) { btn.disabled = false; btn.textContent = t("Разблокировать"); }
+      if (msg) msg.innerHTML = `<span class="err">${map[res.error] || t("Не удалось разблокировать.")}</span>`;
+      if (typeof tgHaptic === "function") tgHaptic("error");
+    }
+  });
+}
+
 function route(go) {
   track("open/" + go);
+  if (window.AvEngLic && AvEngLic.locked(go)) return renderUnlock();
   if (go === "alphabet") return renderAlphabet();
   if (go === "listening") return renderListening();
   if (go === "dialogues") return renderDialogues();
