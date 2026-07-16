@@ -5,6 +5,7 @@
 
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
+const CONTACT_TG = "https://t.me/Ori_gemini_bot";   // контакт/поддержка в Telegram
 const state = loadState();
 
 function defaultState() {
@@ -277,6 +278,7 @@ function renderHome() {
     <button class="ghost fullrow" onclick="renderLeaderboard()">🏆 ${t("Лидерборд")}</button>
     <button class="ghost fullrow" onclick="renderCertificate()">🎓 ${t("Сертификат о прохождении")}</button>
     <button class="ghost fullrow" onclick="tgShare()">📨 ${t("Пригласить коллегу")}</button>
+    <a class="ghost fullrow" style="display:block;text-align:center;text-decoration:none" href="${CONTACT_TG}" target="_blank" rel="noopener">✈️ ${t("Связаться / поддержка")}</a>
     <button class="ghost danger fullrow" onclick="resetAll()">↺ ${t("Сброс прогресса")}</button>
     <p class="disclaimer">${t("Учебный тренажёр на основе ICAO Doc 4444 (гл.12), Doc 9432 и Annex 1, Доп.1. Не заменяет официальные документы и аттестацию.")}</p>
     <p class="disclaimer">© 2026 AvEng. ${t("Все права защищены. Копирование содержимого и кода без письменного разрешения правообладателя запрещено.")} <a href="./TERMS.html" style="color:inherit;text-decoration:underline">${t("Условия")}</a></p>
@@ -330,6 +332,7 @@ function renderUnlock() {
     </div>
     <div id="licMsg" class="unlock-msg"></div>
     <p class="unlock-note">${t("Нет кода? Обратитесь к вашей организации за кодом доступа.")}</p>
+    <a class="primary" style="display:block;text-align:center;text-decoration:none;max-width:340px;margin:8px auto 0" href="${CONTACT_TG}" target="_blank" rel="noopener">${t("✈️ Связаться в Telegram")}</a>
   </div>`;
   const inp = document.getElementById("licCode");
   if (inp) { inp.focus(); inp.addEventListener("keydown", e => { if (e.key === "Enter") doUnlock(); }); }
