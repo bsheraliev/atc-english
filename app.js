@@ -5,6 +5,8 @@
 
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
+/* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
+const APP_VERSION = "1.2.0";
 const CONTACT_TG = "https://t.me/Ori_gemini_bot";   // контакт/поддержка в Telegram
 const state = loadState();
 
@@ -282,6 +284,7 @@ function renderHome() {
     <button class="ghost danger fullrow" onclick="resetAll()">↺ ${t("Сброс прогресса")}</button>
     <p class="disclaimer">${t("Учебный тренажёр на основе ICAO Doc 4444 (гл.12), Doc 9432 и Annex 1, Доп.1. Не заменяет официальные документы и аттестацию.")}</p>
     <p class="disclaimer">© 2026 AvEng. ${t("Все права защищены. Копирование содержимого и кода без письменного разрешения правообладателя запрещено.")} <a href="./TERMS.html" style="color:inherit;text-decoration:underline">${t("Условия")}</a></p>
+    <p class="disclaimer verline">${t("Версия")} ${APP_VERSION} · ${t("вопросов")}: ${DATA.quiz.length}</p>
   `;
 }
 function tile(go, icon, title, sub, wip) {
