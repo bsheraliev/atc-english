@@ -8,6 +8,25 @@ const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
 const APP_VERSION = "1.2.1";
 const CONTACT_TG = "https://t.me/Ori_gemini_bot";   // контакт/поддержка в Telegram
+/* Основные организации/компании ГА РТ для выбора при запросе аттестации.
+   «Другая организация…» открывает поле свободного ввода. Список легко расширять. */
+const ORGS = [
+  "Агентство гражданской авиации (АГА)",
+  "Сомон Эйр (Somon Air)",
+  "Шохин Эйр (Shohin Air)",
+  "Тоҷик Эйр (Tajik Air)",
+  "Международный аэропорт Душанбе (МАД)",
+  "Международный аэропорт Худжанд",
+  "Международный аэропорт Куляб",
+  "Международный аэропорт Бохтар",
+  "Тоҷикаэронавигатсия (ТАН)",
+  "SCAT",
+  "East Air"
+];
+function attOrgVal() {
+  const sel = $("#attOrg"); if (!sel) return "";
+  return sel.value === "__other" ? ($("#attOrgOther").value || "").trim() : sel.value;
+}
 const state = loadState();
 
 function defaultState() {
@@ -1059,12 +1078,18 @@ function attFmt(s) { const m = Math.floor(s / 60), x = s % 60; return m + ":" + 
 function attCleanup() { attStopTimer(); attStopQ(); document.body.classList.remove("exam-lock"); }
 function renderAttest() {
   attCleanup(); tgBack(true);
-  att = { name: (att && att.name) || "", unit: (att && att.unit) || "", reqId: null };
+  att = { name: (att && att.name) || "", unit: (att && att.unit) || "", org: (att && att.org) || "", reqId: null };
+  const orgCustom = att.org && ORGS.indexOf(att.org) < 0;
+  const orgOpts = [`<option value="">— ${t("выберите организацию")} —</option>`]
+    .concat(ORGS.map(o => `<option value="${esc(o)}"${att.org === o ? " selected" : ""}>${esc(o)}</option>`))
+    .concat([`<option value="__other"${orgCustom ? " selected" : ""}>${t("Другая организация…")}</option>`]).join("");
   app.innerHTML = `${topbar("Аттестация")}
     <div class="qcard">
       <div class="open-badge">🎓 ${t("Проктор-экзамен · допуск экзаменатора")}</div>
       <p class="qsub">${t("20 вопросов · лимит 15 мин · проходной 75% · справка о прохождении. Старт — после ввода данных и получения кода допуска у экзаменатора.")}</p>
       <input id="attName" class="select" type="text" placeholder="${t("Фамилия, имя, отчество")}" value="${esc(att.name)}">
+      <select id="attOrg" class="select">${orgOpts}</select>
+      <input id="attOrgOther" class="select" type="text" placeholder="${t("Название организации")}" value="${orgCustom ? esc(att.org) : ""}" style="${orgCustom ? "" : "display:none"}">
       <input id="attUnit" class="select" type="text" placeholder="${t("Подразделение / должность")}" value="${esc(att.unit)}">
       <button class="next" id="attReq" disabled>${t("Запросить допуск")}</button>
       <div id="attApprove" class="attapprove" style="display:none">
@@ -1075,8 +1100,10 @@ function renderAttest() {
     </div>
     <button class="ghost fullrow" onclick="renderAttestLog()">📋 ${t("Журнал аттестаций")}</button>
     <button class="ghost fullrow" onclick="renderHome()">${t("В меню")}</button>`;
-  const nm = $("#attName"), un = $("#attUnit"), rq = $("#attReq");
-  const val = () => { rq.disabled = !(nm.value.trim() && un.value.trim()); };
+  const nm = $("#attName"), un = $("#attUnit"), rq = $("#attReq"), og = $("#attOrg"), ogo = $("#attOrgOther");
+  const val = () => { rq.disabled = !(nm.value.trim() && attOrgVal() && un.value.trim()); };
+  og.addEventListener("change", () => { ogo.style.display = og.value === "__other" ? "" : "none"; if (og.value === "__other") setTimeout(() => ogo.focus(), 30); val(); });
+  ogo.addEventListener("input", val);
   nm.addEventListener("input", val); un.addEventListener("input", val); val();
   rq.addEventListener("click", attestRequest);
   $("#attGo").addEventListener("click", attestVerify);
@@ -1084,12 +1111,12 @@ function renderAttest() {
 }
 async function attestRequest() {
   const nm = $("#attName"), un = $("#attUnit"), rq = $("#attReq");
-  att.name = nm.value.trim(); att.unit = un.value.trim();
-  if (!att.name || !att.unit) return;
+  att.name = nm.value.trim(); att.unit = un.value.trim(); att.org = attOrgVal();
+  if (!att.name || !att.unit || !att.org) return;
   const lbl = rq.textContent; rq.disabled = true; rq.textContent = t("Отправляю запрос…");
   try {
     const r = await fetch(aiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "request", name: att.name, unit: att.unit, subject: "AvEng · Авиационный английский", catName: "Аттестация · " + (ROLE_NAMES[state.role] || "") }) });
+      body: JSON.stringify({ action: "request", name: att.name, unit: att.unit, org: att.org, subject: "AvEng · Авиационный английский", catName: "Аттестация · " + (ROLE_NAMES[state.role] || "") }) });
     if (!r.ok) throw new Error("http " + r.status);
     const d = await r.json();
     if (!d.ok || !d.reqId) throw new Error(d.error || "нет ответа сервера");
@@ -1173,7 +1200,7 @@ function attFinish(timeout) {
   const total = att.list.length, ok = att.correct, pct = Math.round(ok / total * 100), pass = pct >= ATT.PASS * 100;
   const now = new Date(), pad = n => String(n).padStart(2, "0");
   const ds = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  attSaveHist({ d: now.toISOString(), name: att.name, unit: att.unit, pct, ok, total, sec: att.elapsed, pass, sw: att.switches });
+  attSaveHist({ d: now.toISOString(), name: att.name, unit: att.unit, org: att.org || "", pct, ok, total, sec: att.elapsed, pass, sw: att.switches });
   attReport(pct, ok, total, pass);
   const vc = pass ? "ok" : "no";
   app.innerHTML = `${topbar("Аттестация")}
@@ -1188,7 +1215,7 @@ function attFinish(timeout) {
       <h1 class="cert-title">AvEng — Аттестация по авиационному английскому</h1>
       <div class="cert-subtitle">ICAO Doc 4444 · Doc 9432 · Annex 1</div>
       <div class="cert-divider"></div>
-      <div class="cert-rank"><div class="cert-rank-name">${esc(att.name)}</div><div class="cert-rank-sub">${esc(att.unit)}</div></div>
+      <div class="cert-rank"><div class="cert-rank-name">${esc(att.name)}</div><div class="cert-rank-sub">${esc((att.org ? att.org + " · " : "") + att.unit)}</div></div>
       <div class="cert-stats">
         <div class="cert-stat"><div class="cert-stat-val">${pct}%</div><div class="cert-stat-lbl">результат</div></div>
         <div class="cert-stat"><div class="cert-stat-val">${ok}/${total}</div><div class="cert-stat-lbl">верных</div></div>
@@ -1213,7 +1240,7 @@ function attReview() {
 function attReport(pct, ok, total, pass) {
   try {
     fetch(aiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "report", reqId: att.reqId, name: att.name, unit: att.unit, subject: "AvEng · Авиационный английский", catName: "Аттестация · " + (ROLE_NAMES[state.role] || ""), pct, ok, total, pass, switches: att.switches, sec: att.elapsed }) });
+      body: JSON.stringify({ action: "report", reqId: att.reqId, name: att.name, unit: att.unit, org: att.org || "", subject: "AvEng · Авиационный английский", catName: "Аттестация · " + (ROLE_NAMES[state.role] || ""), pct, ok, total, pass, switches: att.switches, sec: att.elapsed }) });
   } catch (e) {}
 }
 function attLoadHist() { try { return JSON.parse(localStorage.getItem(ATT.HIST_KEY) || "[]"); } catch (e) { return []; } }
@@ -1222,7 +1249,7 @@ function renderAttestLog() {
   const h = attLoadHist();
   const rows = h.length ? h.map(r => {
     const d = new Date(r.d).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
-    return `<div class="lbrow"><span class="lbpos">${r.pass ? "✅" : "❌"}</span><span class="lbname">${esc(r.name)}<small class="lborg">${esc(r.unit)} · ${d}${r.sw > 0 ? " · ⚠" + r.sw : ""}</small></span><span class="lbscore">${r.pct}%</span></div>`;
+    return `<div class="lbrow"><span class="lbpos">${r.pass ? "✅" : "❌"}</span><span class="lbname">${esc(r.name)}<small class="lborg">${esc((r.org ? r.org + " · " : "") + r.unit)} · ${d}${r.sw > 0 ? " · ⚠" + r.sw : ""}</small></span><span class="lbscore">${r.pct}%</span></div>`;
   }).join("") : `<div class="qsub">${t("Записей пока нет. Пройдите аттестацию — результат сохранится здесь.")}</div>`;
   app.innerHTML = `${topbar("Журнал аттестаций")}<div class="qcard">${rows}</div>
     ${h.length ? `<button class="ghost danger fullrow" onclick="if(confirm('Очистить журнал аттестаций на этом устройстве?')){localStorage.removeItem('${ATT.HIST_KEY}');renderAttestLog();}">${t("Очистить журнал")}</button>` : ""}
