@@ -117,7 +117,7 @@
       go.disabled = true; msg.textContent = t.sending;
       fetch(URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ app: APP, version: VER, kind: kind, text: text, where: (location.pathname + (location.hash || '')).slice(0, 120), contact: ct.value.trim(), hp: hp.value })
+        body: JSON.stringify({ app: APP, version: VER, kind: kind, text: text, where: location.pathname.slice(0, 120), contact: ct.value.trim(), hp: hp.value })
       }).then(function (r) { return r.json().then(function (d) { return { st: r.status, d: d }; }); })
         .then(function (x) {
           if (x.st === 429) { msg.textContent = t.many; go.disabled = false; return; }
