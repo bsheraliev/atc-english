@@ -2,7 +2,7 @@
    Стратегия: отдаём из кэша мгновенно, в фоне тянем свежую версию с сети
    и обновляем кэш — поэтому правки сами «долетают» до установленных PWA
    (новый контент виден при следующем запуске, без ручного поднятия версии). */
-const CACHE = "atc-eng-v15";
+const CACHE = "atc-eng-v16";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const ASSETS = [
   "./data.js",
   "./license.js",
   "./app.js",
+  "./feedback.js",
   "./manifest.webmanifest",
   "./icon.svg"
 ];
