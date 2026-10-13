@@ -1868,6 +1868,7 @@ function openGuide(anchor) {
   layer.hidden = false;
   guideOpen = true;
   document.body.style.overflow = "hidden";
+  document.body.classList.add("guide-open");
   try { history.pushState({ guide: 1 }, ""); } catch (e) {}
 }
 function closeGuide(fromPop) {
@@ -1876,6 +1877,7 @@ function closeGuide(fromPop) {
   layer.hidden = true;
   guideOpen = false;
   document.body.style.overflow = "";
+  document.body.classList.remove("guide-open");
   const frame = $("#guideFrame");
   if (frame) frameGo(frame, "about:blank");
   if (!fromPop) { try { history.back(); } catch (e) {} }   // снимаем запись, добавленную при открытии

@@ -109,8 +109,11 @@ window.AVENG_SMOKE = async function () {
     { wait: 700, has: () => !document.querySelector('#guideLayer').hidden && /guide\.html/.test(frameUrl()) });
   await step('проводник открывается на нужном шаге', async () => { openGuide('exam-5'); },
     { wait: 700, has: () => /#exam-5$/.test(frameUrl()) });
+  await step('под проводником спрятана кнопка обращений', async () => {},
+    { has: () => { const b = document.querySelector('.fbk-btn'); return !b || getComputedStyle(b).display === 'none'; } });
   await step('проводник закрывается', async () => { closeGuide(); },
-    { wait: 400, has: () => document.querySelector('#guideLayer').hidden && !document.body.style.overflow });
+    { wait: 400, has: () => document.querySelector('#guideLayer').hidden && !document.body.style.overflow
+        && !document.body.classList.contains('guide-open') });
 
   /* --- вернуть прогресс владельца --- */
   cleanup();
