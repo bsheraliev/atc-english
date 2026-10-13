@@ -1,0 +1,489 @@
+<!doctype html>
+<!-- Сгенерировано scripts/build-guide.py из docs/guide.html — вручную не править. -->
+<html lang="ru" data-site>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06121a">
+<title>Проводник AvEng</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>html{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<a class="backapp" id="backapp" href="./">← В приложение</a>
+<style>.backapp{display:inline-block;margin:14px 18px 0;font:600 14px var(--font-body);color:var(--accent);text-decoration:none;padding:8px 0}.backapp:focus-visible{outline:2px solid var(--accent);outline-offset:2px}</style>
+<script>if(window.self!==window.top)document.getElementById("backapp").hidden=true;</script>
+<style>
+/* Layout: мастер по центру — дорожки, лента прогресса, мини-экран рядом с текстом шага, назад/дальше. */
+:root{
+  --bg:#eef3f3; --surface:#ffffff; --surface-2:#e2eceb; --line:#ccdcda;
+  --fg:#0f1e22; --muted:#4f6469; --accent:#0e7c63; --accent-2:#0a5c4a; --accent-ink:#ffffff;
+  --warn:#9c4a1e;
+  /* мини-экран приложения — всегда в настоящей тёмной палитре AvEng, в обеих темах */
+  --app-bg:#06121a; --app-panel:#0e2632; --app-panel2:#13313f; --app-line:#1d4254;
+  --app-fg:#e8f4f8; --app-muted:#8fb3c2; --app-green:#27e0a0; --app-amber:#ffc14d;
+  --app-red:#ff6b6b; --app-blue:#46c2ff; --app-ink:#04221a;
+  --frame:#03090d; --frame-edge:#13222b;
+  --r:16px; --r-sm:11px;
+  --font-display:'Archivo',system-ui,sans-serif;
+  --font-body:'IBM Plex Sans',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#08141a; --surface:#0f1f27; --surface-2:#152a34; --line:#22414e;
+  --fg:#e4eef1; --muted:#93aeb8; --accent:#3fe0a8; --accent-2:#8af0cd; --accent-ink:#04221a;
+  --warn:#f0a070; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#08141a; --surface:#0f1f27; --surface-2:#152a34; --line:#22414e;
+  --fg:#e4eef1; --muted:#93aeb8; --accent:#3fe0a8; --accent-2:#8af0cd; --accent-ink:#04221a;
+  --warn:#f0a070; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.5;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding-inline:18px;padding-block:22px 40px}
+
+/* ---- шапка ---- */
+.top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(145deg,var(--accent),var(--accent-2));
+  display:grid;place-items:center;flex:none}
+.logo svg{width:22px;height:22px;fill:var(--accent-ink)}
+.ttl{font-family:var(--font-display);font-weight:700;font-size:clamp(19px,4.6vw,24px);
+  letter-spacing:-.02em;line-height:1.1;text-wrap:balance}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.theme{margin-left:auto;flex:none;border:1px solid var(--line);background:var(--surface);
+  color:var(--muted);width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:17px;
+  display:grid;place-items:center}
+.theme:hover{color:var(--fg);border-color:var(--accent)}
+
+/* ---- дорожки ---- */
+.tabs{display:flex;gap:8px;background:var(--surface-2);padding:5px;border-radius:14px;
+  border:1px solid var(--line);margin-bottom:18px}
+.tab{flex:1;border:0;background:transparent;color:var(--muted);font-family:var(--font-body);
+  font-weight:600;font-size:14.5px;padding:10px 8px;border-radius:10px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:background .18s,color .18s}
+.tab b{font-weight:700}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--fg)}
+.tab .ic{font-size:16px;flex:none}
+.tab .lb{min-width:0}
+@media (max-width:430px){ .tab{font-size:13px;padding:9px 6px;gap:5px} }
+
+/* ---- прогресс ---- */
+.rail{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+.dot{width:26px;height:6px;border-radius:99px;background:var(--line);border:0;padding:0;cursor:pointer;
+  transition:background .2s,width .2s}
+.dot.done{background:var(--accent)}
+.dot.now{background:var(--accent);width:40px}
+.count{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;
+  font-family:var(--font-mono)}
+
+/* ---- сцена ---- */
+.stage{display:grid;grid-template-columns:236px 1fr;gap:26px;align-items:center;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:24px;min-height:470px}
+@media (max-width:620px){ .stage{grid-template-columns:1fr;gap:18px;padding:18px;text-align:center;min-height:0} }
+.stepwrap{min-width:0;animation:fade .34s ease both}
+.reduce .stepwrap{animation:none}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+  font-weight:700;margin-bottom:8px}
+.stitle{font-family:var(--font-display);font-weight:700;font-size:clamp(20px,5vw,26px);
+  letter-spacing:-.02em;line-height:1.12;text-wrap:balance;margin:0 0 10px}
+.sdesc{font-size:15.5px;color:var(--fg);margin:0 0 14px;max-width:46ch}
+.note{display:flex;gap:9px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:11px 13px;font-size:13.5px;color:var(--muted);text-align:left;
+  max-width:46ch}
+@media (max-width:620px){ .sdesc,.note{margin-inline:auto} }
+.note.warn{border-color:color-mix(in srgb,var(--warn) 45%,var(--line));
+  background:color-mix(in srgb,var(--warn) 9%,var(--surface));color:var(--fg)}
+.note .nic{flex:none;font-size:15px;line-height:1.3}
+.note code{font-family:var(--font-mono);font-size:12.5px;color:var(--fg)}
+
+/* ---- телефон ---- */
+.phone{justify-self:center;width:228px;flex:none}
+.frame{position:relative;background:var(--frame);border-radius:30px;padding:9px;
+  box-shadow:0 12px 34px rgba(0,0,0,.28),inset 0 0 0 1.5px var(--frame-edge)}
+.scr{background:var(--app-bg);border-radius:22px;overflow:hidden;height:410px;position:relative;
+  color:var(--app-fg);font-size:10px;line-height:1.35;display:flex;flex-direction:column;text-align:left}
+/* шапка внутри приложения */
+.ah{display:flex;align-items:center;gap:6px;padding:14px 10px 8px;flex:none;border-bottom:1px solid var(--app-line)}
+.ah .hb{color:var(--app-muted);font-size:9px;flex:none}
+.ah b{font-size:10.5px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ah .xp{font-family:var(--font-mono);font-size:7.5px;color:var(--app-green);border:1px solid var(--app-line);
+  border-radius:99px;padding:1px 5px;flex:none}
+.ab{padding:8px;flex:1;overflow:hidden;display:flex;flex-direction:column;gap:6px;min-height:0}
+.lead{font-size:8.5px;color:var(--app-muted)}
+/* главный экран */
+.chips{display:flex;gap:4px}
+.chip{border:1px solid var(--app-line);border-radius:99px;padding:2px 6px;font-size:7.5px;color:var(--app-muted)}
+.chip.on{border-color:var(--app-green);color:var(--app-green)}
+.brandline{text-align:center;font-size:8.5px;color:var(--app-muted);padding:2px 0}
+.brandline b{color:var(--app-green);font-size:10px}
+.rank{display:flex;gap:7px;align-items:center;background:var(--app-panel);border:1px solid var(--app-line);
+  border-radius:10px;padding:7px}
+.rank .ri{font-size:20px;flex:none}
+.rank .rg{flex:1;min-width:0}
+.rank b{font-size:10px;display:block}
+.rank small{font-size:7px;color:var(--app-muted);display:block}
+.bar{height:4px;background:#08202b;border:1px solid var(--app-line);border-radius:99px;margin-top:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--app-green),var(--app-blue))}
+.daily{display:flex;align-items:center;gap:6px;font-size:7.5px;color:var(--app-muted);
+  background:var(--app-panel);border:1px solid var(--app-line);border-radius:9px;padding:5px 7px}
+.daily .db{flex:1;height:4px;background:#08202b;border-radius:99px;overflow:hidden}
+.daily .db i{display:block;height:100%;width:35%;background:var(--app-amber)}
+.licbar{display:flex;align-items:center;gap:6px;background:rgba(255,193,77,.1);
+  border:1px solid var(--app-amber);border-radius:9px;padding:6px 7px;font-size:7.5px;color:var(--app-fg)}
+.licbar .lt{flex:1;min-width:0}
+.licbar .lb{background:var(--app-amber);color:#2a1d00;border-radius:6px;padding:3px 6px;font-weight:700;flex:none}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.tl{background:var(--app-panel);border:1px solid var(--app-line);border-radius:9px;padding:6px;position:relative}
+.tl i{font-style:normal;font-size:14px;display:block}
+.tl b{font-size:8.5px;font-weight:700;display:block;margin-top:2px}
+.tl small{font-size:6.5px;color:var(--app-muted);display:block;line-height:1.25}
+.tl.lock{opacity:.75}
+.tl .lk{position:absolute;top:4px;right:4px;font-size:6px;font-weight:700;color:var(--app-amber);
+  border:1px solid var(--app-amber);border-radius:5px;padding:0 3px;background:rgba(0,0,0,.25)}
+.gh{background:var(--app-panel);border:1px solid var(--app-line);border-radius:8px;padding:5px 7px;
+  font-size:8px;text-align:center}
+.row2{display:flex;gap:5px}
+.row2>*{flex:1;min-width:0}
+/* вопрос */
+.hud{display:flex;align-items:center;gap:6px;font-size:7.5px;color:var(--app-muted)}
+.hud .sp{flex:1}
+.qc{background:var(--app-panel);border:1px solid var(--app-line);border-radius:10px;padding:8px;
+  display:flex;flex-direction:column;gap:5px}
+.qt{font-size:9.5px;font-weight:600;line-height:1.35}
+.qs{font-size:7.5px;color:var(--app-muted)}
+.bigl{font-family:var(--font-mono);font-size:40px;font-weight:600;text-align:center;color:var(--app-green);
+  line-height:1.05}
+.opt{background:var(--app-panel2);border:1px solid var(--app-line);border-radius:8px;padding:6px 7px;
+  font-size:8.5px}
+.opt.ok{border-color:var(--app-green);background:rgba(39,224,160,.14);color:var(--app-green)}
+.opt.no{border-color:var(--app-red);background:rgba(255,107,107,.13);color:var(--app-red)}
+.badge{display:inline-block;font-size:6.5px;font-weight:700;border-radius:5px;padding:1px 5px;
+  border:1px solid var(--app-blue);color:var(--app-blue);align-self:flex-start}
+.badge.g{border-color:var(--app-green);color:var(--app-green)}
+.mb{background:var(--app-green);color:var(--app-ink);text-align:center;font-weight:700;font-size:9px;
+  padding:7px;border-radius:8px}
+.mb.sec{background:var(--app-panel);border:1px solid var(--app-line);color:var(--app-fg);font-weight:600}
+.inp{background:var(--app-panel2);border:1px solid var(--app-line);border-radius:7px;padding:6px 7px;
+  font-size:8.5px;color:var(--app-fg);min-height:24px}
+.inp.ph{color:var(--app-muted)}
+.ta{min-height:52px;font-family:var(--font-mono);font-size:7.5px}
+.why{border-left:3px solid var(--app-blue);background:rgba(70,194,255,.1);border-radius:0 6px 6px 0;
+  padding:5px 6px;font-size:7.5px;color:var(--app-fg)}
+.src{font-size:6.5px;color:var(--app-muted);font-family:var(--font-mono)}
+.score{text-align:center}
+.score b{display:block;font-size:26px;color:var(--app-green);line-height:1.1;font-family:var(--font-mono)}
+.score span{font-size:8px;color:var(--app-muted)}
+.cert{background:var(--app-panel);border:1px solid var(--app-green);border-radius:9px;padding:9px;
+  text-align:center;display:flex;flex-direction:column;gap:3px}
+.cert .cn{font-size:10px;font-weight:700}
+.cert .cs{font-size:7px;color:var(--app-muted)}
+.lbrow{display:flex;align-items:center;gap:6px;background:var(--app-panel);border:1px solid var(--app-line);
+  border-radius:8px;padding:5px 7px;font-size:8.5px}
+.lbrow .n{font-family:var(--font-mono);font-size:8px;color:var(--app-muted);width:12px;flex:none}
+.lbrow .g{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lbrow .x{font-family:var(--font-mono);font-size:8px;color:var(--app-green);flex:none}
+.clock{font-family:var(--font-mono);font-size:8px;color:var(--app-amber);border:1px solid var(--app-amber);
+  border-radius:99px;padding:1px 5px}
+/* браузер поверх приложения */
+.brow{display:flex;align-items:center;gap:6px;background:#15232c;padding:13px 8px 7px;font-size:7.5px;
+  color:#c6d8e0;flex:none}
+.brow .url{flex:1;background:#0a151c;border-radius:99px;padding:3px 8px;overflow:hidden;white-space:nowrap;
+  text-overflow:ellipsis;font-family:var(--font-mono)}
+.menu{position:absolute;right:6px;top:32px;width:152px;background:#15232c;border:1px solid #27424f;
+  border-radius:9px;padding:4px;font-size:8.5px;box-shadow:0 10px 26px rgba(0,0,0,.55)}
+.menu div{padding:6px 7px;border-radius:6px;color:#dbe8ee}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--app-bg);border-radius:13px 13px 0 0;
+  border-top:1px solid var(--app-line);padding:9px 8px 10px;display:flex;flex-direction:column;gap:5px;
+  box-shadow:0 -14px 30px rgba(0,0,0,.6)}
+.sheet h4{margin:0 0 2px;font-size:10px}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+
+/* на телефоне макет меньше, чтобы текст шага попадал в первый экран */
+@media (max-width:620px){
+  .phone{width:188px}
+  .frame{border-radius:25px;padding:7px}
+  .scr{height:338px;border-radius:19px}
+}
+
+/* подсветка: куда нажимать */
+.hl{position:relative;border-color:var(--app-green)!important;
+  box-shadow:0 0 0 1.5px color-mix(in srgb,var(--app-green) 55%,transparent)}
+.hl::after{content:"";position:absolute;right:6px;top:50%;margin-top:-12px;width:24px;height:24px;
+  border-radius:99px;border:2px solid #fff;box-shadow:0 0 0 3px color-mix(in srgb,var(--app-green) 45%,transparent);
+  animation:tap 1.5s ease-out infinite;pointer-events:none;z-index:4}
+.hl.mid::after{right:50%;margin-right:-12px}
+.reduce .hl::after{animation:none;opacity:.8}
+@keyframes tap{0%{transform:scale(.6);opacity:1}70%{transform:scale(1.25);opacity:.3}100%{transform:scale(1.35);opacity:0}}
+
+/* ---- навигация ---- */
+.nav{display:flex;align-items:center;gap:12px;margin-top:18px}
+.btn{font-family:var(--font-body);font-weight:700;font-size:15px;border-radius:12px;padding:13px 20px;
+  cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg);
+  transition:border-color .15s,background .15s}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);margin-left:auto}
+.btn.primary.done{background:var(--surface);color:var(--accent)}
+.btn:focus-visible,.tab:focus-visible,.dot:focus-visible,.theme:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.foot{margin-top:22px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6}
+.foot a{color:var(--accent);font-family:var(--font-mono);font-size:12px;overflow-wrap:anywhere}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<div class="wrap">
+  <header class="top">
+    <span class="logo"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span>
+    <div>
+      <div class="ttl">Как заниматься</div>
+      <div class="sub">AvEng · пошагово</div>
+    </div>
+    <button class="theme" id="theme" aria-label="Сменить тему">◐</button>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Что вам нужно">
+    <button class="tab" id="tab-study" role="tab" aria-selected="true" aria-controls="stage"><span class="ic">🎧</span><span class="lb">Я <b>занимаюсь</b></span></button>
+    <button class="tab" id="tab-exam" role="tab" aria-selected="false" aria-controls="stage"><span class="ic">🎓</span><span class="lb">Я <b>сдаю аттестацию</b></span></button>
+  </div>
+
+  <div class="rail">
+    <div class="dots" id="dots"></div>
+    <div class="count" id="count"></div>
+  </div>
+
+  <section class="stage" id="stage">
+    <div class="phone"><div class="frame"><div class="scr" id="screen"></div></div></div>
+    <div class="stepwrap" id="stepwrap">
+      <div class="eyebrow" id="eyebrow"></div>
+      <h2 class="stitle" id="stitle"></h2>
+      <p class="sdesc" id="sdesc"></p>
+      <div id="noteSlot"></div>
+    </div>
+  </section>
+
+  <div class="nav">
+    <button class="btn" id="prev">← Назад</button>
+    <button class="btn primary" id="next">Дальше →</button>
+  </div>
+
+  <p class="foot">
+    Приложение: <a href="https://bsheraliev.github.io/atc-english/">bsheraliev.github.io/atc-english</a><br>
+    Содержание — по ICAO Doc 4444 (гл. 12), Doc 9432 и Annex 1, Доп. 1. Тренажёр не заменяет официальную аттестацию.
+  </p>
+</div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const VER='v1.2.2';
+
+/* --- кусочки мини-экрана приложения --- */
+function hdr(title,o){o=o||{};return `<div class="ah">${o.back?'<span class="hb">‹ Меню</span>':''}<b>${title}</b><span class="xp">${o.xp||'0 XP'}</span>${o.clock?`<span class="clock">${o.clock}</span>`:''}</div>`;}
+function body(inner){return `<div class="ab">${inner}</div>`;}
+function langs(hl){return `<div class="chips ${hl?'hl mid':''}">${[['Рус',1],['Тоҷикӣ',0],['Eng',0]].map(l=>`<span class="chip ${l[1]?'on':''}">${l[0]}</span>`).join('')}</div>`;}
+function brand(){return `<div class="brandline">✈ <b>AvEng</b> · авиационный английский</div>`;}
+function roles(on,hl){const R=['Диспетчер','Пилот','Бортпроводник','Аэропорт'];
+  return `<div class="chips ${hl?'hl mid':''}" style="flex-wrap:wrap">${R.map(r=>`<span class="chip ${r===on?'on':''}">${r}</span>`).join('')}</div>`;}
+function rank(name,sub,pct,xp){return `<div class="rank"><span class="ri">🎖</span><div class="rg"><b>${name}</b><small>Шкала ИКАО: ${sub}</small><div class="bar"><i style="width:${pct}%"></i></div><small style="margin-top:2px">${xp}</small></div></div>`;}
+function daily(n){return `<div class="daily"><span>🎯 Сегодня <b>${n}/20</b></span><span class="db"><i></i></span><span>🔥 <b>3</b> дн.</span></div>`;}
+function licbar(hl){return `<div class="licbar"><span class="lt">🔒 Демо-версия · 66 вопр. из 227 + радиоалфавит. Полный курс — по коду организации.</span><span class="lb ${hl?'hl mid':''}">Ввести код</span></div>`;}
+function tile(icon,name,sub,o){o=o||{};
+  return `<div class="tl ${o.lock?'lock':''} ${o.hl?'hl mid':''}">${o.lock?'<span class="lk">🔒 по лицензии</span>':''}<i>${icon}</i><b>${name}</b><small>${sub}</small></div>`;}
+function hud(n,total,hearts){return `<div class="hud"><span>Вопрос ${n}/${total}</span><span class="sp"></span><span>${'❤️'.repeat(hearts)}${'🖤'.repeat(3-hearts)}</span><span>🔥 ${n-1}</span></div>`;}
+
+const TRACKS={
+study:[
+ {eye:'Шаг 1',t:'Откройте приложение',d:'Ссылка одна и та же для телефона и компьютера. Регистрация не нужна — тренажёр открывается сразу.',
+  note:['📶','Первый раз — с интернетом. Дальше AvEng работает без связи: уроки лежат в телефоне.'],
+  scr:`<div class="brow"><span class="url">bsheraliev.github.io/atc-english</span><span>⋮</span></div>
+   ${body(`${langs()}${brand()}${rank('Стажёр','Level 1–2',8,'0 XP · до «Диспетчер-практикант» 120 XP')}${daily(0)}
+   <div class="tiles">${tile('🔤','Радиоалфавит','Алфавит ИКАО + числа')}${tile('🗼','Фразеология','Doc 4444 гл.12')}</div>`)}`},
+
+ {eye:'Шаг 2',t:'Поставьте на главный экран',d:'В меню браузера выберите «Добавить на главный экран» — появится значок, как у обычного приложения, и откроется без адресной строки.',
+  note:['📲','iPhone: «Поделиться» → «На экран Домой». Android: меню ⋮ → «Установить приложение».'],
+  scr:`<div class="brow"><span class="url">bsheraliev.github.io/atc-english</span><span>⋮</span></div>
+   ${body(`${brand()}${rank('Стажёр','Level 1–2',8,'0 XP')}`)}
+   <div class="menu"><div>Новая вкладка</div><div>Закладки</div><div class="hl" style="border:1px solid transparent">Добавить на гл. экран</div><div>Настройки</div></div>`},
+
+ {eye:'Шаг 3',t:'Выберите язык и роль',d:'Язык интерфейса — русский, таджикский или английский. Роль решает, какие темы вам показывать: у диспетчера координация, у бортпроводника — объявления в салоне.',
+  note:['🔁','Роль и язык меняются в любой момент — прогресс при этом не сбрасывается.'],
+  scr:body(`${langs(1)}${brand()}${roles('Диспетчер',1)}${rank('Стажёр','Level 1–2',8,'0 XP')}
+   <div class="tiles">${tile('🔤','Радиоалфавит','Алфавит ИКАО + числа')}${tile('🗼','Фразеология','Doc 4444 гл.12')}</div>`)},
+
+ {eye:'Шаг 4',t:'Начните с радиоалфавита',d:'Первая плитка — фундамент: 26 букв ИКАО и произношение цифр. Она открыта всем и не требует кода организации.',
+  note:['🔊','Буквы озвучены заранее, поэтому звук работает и в Telegram, и без интернета.'],
+  scr:body(`${brand()}${roles('Диспетчер')}${daily(4)}
+   <div class="tiles">${tile('🔤','Радиоалфавит','Алфавит ИКАО + числа · Doc 9432',{hl:1})}${tile('🗼','Фразеология','Стандартные команды')}${tile('📻','Стандартные слова','AFFIRM, WILCO, ROGER…')}${tile('🔁','Read-back','Обратный повтор',{lock:1})}</div>`)},
+
+ {eye:'Шаг 5',t:'Слушайте и отвечайте',d:'Показана буква — нажмите «Прослушать» и выберите, как она звучит в эфире. Так же устроены цифры: «три» в радиообмене — TREE, «девять» — NINER.',
+  scr:hdr('Радиоалфавит',{back:1,xp:'40 XP'})+body(`<div class="hud"><span>7/12</span><span class="sp"></span><span>✅ 6</span></div>
+   <div class="qc"><div class="bigl">Q</div><div class="qs" style="text-align:center">Как звучит по правилам радиообмена?</div>
+   <div class="mb sec">🔊 Прослушать</div>
+   <div class="opt">QUARTER</div><div class="opt hl">QUEBEC</div><div class="opt">QUITO</div></div>`)},
+
+ {eye:'Шаг 6',t:'Читайте разбор, а не только «верно»',d:'После ответа AvEng объясняет, почему так, и даёт ссылку на документ ИКАО. Разбор — то, ради чего стоит ошибаться.',
+  note:['❤️','Три жизни на подход. Потеряли все — подход заканчивается, вопрос уходит в «Работу над ошибками».'],
+  scr:hdr('Фразеология',{back:1,xp:'180 XP'})+body(`${hud(4,10,2)}
+   <div class="qc"><div class="qt">Диспетчер передал: CLIMB FLIGHT LEVEL 240. Чем экипаж подтверждает, что указание принято и будет выполнено?</div>
+   <div class="opt no">ROGER</div><div class="opt ok">WILCO</div>
+   <div class="why">ROGER — «принял», без обязательства выполнить. WILCO = will comply: принял <b>и</b> выполню.</div>
+   <div class="src">ICAO Doc 9432, гл. 2</div></div>`)},
+
+ {eye:'Шаг 7',t:'Что открыто, а что по лицензии',d:'Без кода доступны радиоалфавит, фразеология, стандартные слова и числа — 66 вопросов из 227. Остальные темы и режимы помечены замком.',
+  note:['🏢','Код выдаётся организации: аэропорту, авиакомпании, учебному центру. Кнопка «Ввести код» — в жёлтой полосе наверху.'],
+  scr:body(`${licbar(1)}
+   <div class="tiles">${tile('🌦️','Метео-фразеология','QNH, RVR, CAVOK',{lock:1})}${tile('🚨','Аварийные','MAYDAY, 7700/7600',{lock:1})}${tile('👂','На слух','Диктор → read-back',{lock:1})}${tile('🎧','Радиообмен','Собрать диалог',{lock:1})}</div>`)},
+
+ {eye:'Шаг 8',t:'Отвечайте словами, а не кнопками',d:'В части вопросов нужно написать фразу по-английски. Ответ оценивает ИИ: ставит балл, говорит, чего не хватило, и показывает эталонную фразу.',
+  note:['✍️','Таких вопросов 12. В экзамен на время и в аттестацию они не попадают — там только выбор из вариантов.'],
+  scr:hdr('Аварийные процедуры',{back:1,xp:'520 XP'})+body(`${hud(6,10,3)}
+   <div class="qc"><span class="badge">✍️ Развёрнутый ответ · проверка ИИ</span>
+   <div class="qt">Борт доложил отказ двигателя. Передайте указание снижаться до эшелона 100 и запросите количество людей на борту.</div>
+   <div class="inp ta ph">Введите ответ (по-английски)…</div>
+   <div class="mb hl mid">Проверить ответ</div></div>`)},
+
+ {eye:'Шаг 9',t:'Возвращайтесь к ошибкам',d:'Каждый неверный ответ копится в «Работе над ошибками». Ответили верно — вопрос оттуда уходит. Цель на день — 20 вопросов, серия дней держит темп.',
+  scr:body(`${daily(14)}
+   <div class="tiles">${tile('🧯','Работа над ошибками','7 на повторение',{hl:1})}${tile('⏱️','Экзамен на время','15 вопросов · 20 с')}</div>
+   <div class="row2"><div class="gh">🏅 Ачивки (4/9)</div><div class="gh">📊 Статистика</div></div>
+   <div class="qc"><div class="qs">Слабые темы</div>
+   <div class="opt no">Числа и частоты — 54 %</div><div class="opt">Read-back — 71 %</div></div>`)},
+
+ {eye:'Шаг 10',t:'Сертификат и общая таблица',d:'Ранг растёт от XP: Стажёр → Диспетчер УВД → Допущен к работе → Эксперт ИКАО. Сертификат можно показать, а в лидерборде видно и коллег, и команды по организациям.',
+  note:['📨','Кнопка «Пригласить коллегу» отправляет ссылку на бота — там AvEng открывается прямо в Telegram.'],
+  scr:hdr('Сертификат',{back:1,xp:'1240 XP'})+body(`<div class="cert"><span style="font-size:18px">🎓</span><span class="cn">Допущен к работе</span>
+   <span class="cs">1240 XP · 186 верных ответов · 9 тем</span><span class="cs">AvEng · ${VER}</span></div>
+   <div class="qs">🏆 Лидерборд · команды</div>
+   <div class="lbrow"><span class="n">1</span><span class="g">Сомон Эйр</span><span class="x">2310</span></div>
+   <div class="lbrow"><span class="n">2</span><span class="g">АГА · ОВД</span><span class="x">1240</span></div>
+   <div class="mb sec">📨 Пригласить коллегу</div>`)}
+],
+
+exam:[
+ {eye:'Шаг 1',t:'Введите код организации',d:'Аттестация идёт по полному банку вопросов, поэтому сначала нужен код: он открывает все 227 вопросов и закрытые режимы.',
+  note:['🏢','Код выдаёт ваша организация. У него есть срок: после окончания курс снова станет демо-версией.'],
+  scr:hdr('Полный доступ',{back:1})+body(`<div class="qc" style="text-align:center"><span style="font-size:22px">✈🔓</span>
+   <div class="qt">Полный курс AvEng</div>
+   <div class="qs">227 вопросов по 13 темам, радиообмен, аудирование и экзамен ELPET/TEA.</div>
+   <div class="inp ph">Код организации</div>
+   <div class="mb hl mid">Разблокировать</div></div>`)},
+
+ {eye:'Шаг 2',t:'Проверьте роль',d:'Роль задаёт набор тем аттестации. У диспетчера это фразеология, квитирование, метео, аварийные и координация; у пилота вместо координации — радиообмен с позиции экипажа.',
+  note:['⚠️','Роль выбирают до аттестации: сменить её на экзамене уже нельзя.',true],
+  scr:body(`<div class="licbar" style="border-color:var(--app-green);background:rgba(39,224,160,.1)"><span class="lt">✅ Полный доступ · Сомон Эйр · до 2027-06-30</span></div>
+   ${roles('Пилот',1)}${rank('Диспетчер УВД','Level 3–4',62,'640 XP')}`)},
+
+ {eye:'Шаг 3',t:'Прогоните экзамен на время',d:'«Экзамен на время» — та же механика, что на аттестации: 15 вопросов вашей роли, 20 секунд на каждый. Хорошая разминка накануне.',
+  scr:hdr('Экзамен на время',{back:1,xp:'640 XP'})+body(`${hud(9,15,3)}
+   <div class="qc"><div class="qt">QNH 1013 — как это передаётся в эфире?</div>
+   <div class="opt">QNH ONE THOUSAND THIRTEEN</div><div class="opt hl">QNH ONE ZERO ONE TREE</div>
+   <div class="opt">QNH TEN THIRTEEN</div></div>`)},
+
+ {eye:'Шаг 4',t:'Откройте «Аттестацию»',d:'Это отдельная плитка — проктор-экзамен с допуском экзаменатора и справкой по итогу. ELPET/TEA рядом — это самооценка, не аттестация.',
+  scr:body(`${roles('Пилот')}
+   <div class="tiles">${tile('📋','Экзамен ELPET / TEA','6 критериев LPR')}${tile('📝','Аттестация','Допуск экзаменатора + справка',{hl:1})}${tile('⏱️','Экзамен на время','15 вопросов · 20 с')}${tile('🧯','Работа над ошибками','3 на повторение')}</div>`)},
+
+ {eye:'Шаг 5',t:'Заполните данные',d:'ФИО, организация и подразделение попадут в справку и в отчёт экзаменатору. Организация выбирается из списка; если вашей нет — «Другая организация».',
+  note:['👆','Кнопка «Запросить допуск» включится, только когда заполнены все три поля.'],
+  scr:hdr('Аттестация',{back:1,xp:'640 XP'})+body(`<div class="qc"><span class="badge g">🎓 Проктор-экзамен · допуск экзаменатора</span>
+   <div class="qs">20 вопросов · лимит 15 мин · проходной 75 % · справка о прохождении.</div>
+   <div class="inp">Саидов Нурулло Азизович</div>
+   <div class="inp">Сомон Эйр (Somon Air)</div>
+   <div class="inp">Лётный отряд · второй пилот</div>
+   <div class="mb hl mid">Запросить допуск</div></div>`)},
+
+ {eye:'Шаг 6',t:'Получите код у экзаменатора',d:'Запрос уходит экзаменатору в Telegram вместе с вашими данными. Он называет одноразовый код — введите его и начинайте.',
+  note:['📵','Код действует на один заход. Вышли из экзамена — нужен новый.'],
+  scr:hdr('Аттестация',{back:1,xp:'640 XP'})+body(`<div class="qc"><span class="badge g">🎓 Проктор-экзамен</span>
+   <div class="why">Запрос №418 отправлен экзаменатору. Попросите у него код допуска.</div>
+   <div class="inp ph">Код от экзаменатора</div>
+   <div class="mb hl mid">Начать аттестацию</div></div>`)},
+
+ {eye:'Шаг 7',t:'Идёт экзамен',d:'20 вопросов, общий таймер 15 минут и 45 секунд на каждый вопрос. Не ответили за 45 секунд — вопрос засчитывается как пропущенный и экзамен идёт дальше.',
+  note:['⚠️','Уходы из вкладки считаются и попадают в отчёт экзаменатору. Копирование на экзамене отключено.',true],
+  scr:hdr('Аттестация · 12/20',{xp:'640 XP',clock:'⏱ 7:42'})+body(`<div class="hud"><span>⏳ 31 c</span><span class="sp"></span><span>⚠ уходов: 0</span></div>
+   <div class="qc"><div class="qt">Экипаж передал MAYDAY. Какой код ответчика соответствует бедствию?</div>
+   <div class="opt">7500</div><div class="opt hl">7700</div><div class="opt">7600</div></div>`)},
+
+ {eye:'Шаг 8',t:'Справка и журнал',d:'Результат сразу уходит экзаменатору и в общую таблицу управления. На экране — справка с вашими данными и процентом; все попытки остаются в журнале аттестаций.',
+  note:['📄','Справку можно показать с экрана или распечатать через «Поделиться» в браузере.'],
+  scr:hdr('Результат аттестации',{back:1,xp:'820 XP'})+body(`<div class="score"><b>85 %</b><span>17 из 20 · проходной 75 %</span></div>
+   <div class="cert"><span class="cn">Аттестация пройдена</span><span class="cs">Саидов Нурулло Азизович</span>
+   <div class="cs">Сомон Эйр · Лётный отряд · второй пилот</div><span class="cs">13.10.2026 · AvEng ${VER}</span></div>
+   <div class="mb sec">📋 Журнал аттестаций</div>`)}
+]
+};
+
+let track='study', i=0;
+const stepwrap=$('#stepwrap');
+const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+
+function render(animate){
+  const steps=TRACKS[track], s=steps[i];
+  $('#tab-study').setAttribute('aria-selected',track==='study');
+  $('#tab-exam').setAttribute('aria-selected',track==='exam');
+  $('#dots').innerHTML=steps.map((_,k)=>`<button class="dot ${k<i?'done':''} ${k===i?'now':''}" data-k="${k}" aria-label="Шаг ${k+1}"></button>`).join('');
+  $('#count').textContent=`${i+1} / ${steps.length}`;
+  $('#screen').innerHTML=s.scr;
+  if(animate!==false){ stepwrap.style.animation='none'; void stepwrap.offsetWidth; stepwrap.style.animation=''; }
+  $('#eyebrow').textContent=s.eye;
+  $('#stitle').textContent=s.t;
+  $('#sdesc').textContent=s.d;
+  $('#noteSlot').innerHTML = s.note ? `<div class="note ${s.note[2]?'warn':''}"><span class="nic">${s.note[0]}</span><span>${s.note[1]}</span></div>` : '';
+  $('#prev').disabled=i===0;
+  const last=i===steps.length-1, nx=$('#next');
+  nx.classList.toggle('done',last);
+  nx.textContent = last ? '↻ С начала' : 'Дальше →';
+  store.set('aveng_guide_track',track);
+}
+function go(d){ const n=TRACKS[track].length; i=Math.min(Math.max(0,i+d),n-1); render(); }
+function setTrack(t){ if(t===track)return; track=t; i=0; render(); }
+
+$('#next').onclick=()=>{ if(i===TRACKS[track].length-1){ i=0; render(); } else go(1); };
+$('#prev').onclick=()=>go(-1);
+$('#tab-study').onclick=()=>setTrack('study');
+$('#tab-exam').onclick=()=>setTrack('exam');
+$('#dots').onclick=e=>{ const d=e.target.closest('.dot'); if(d){ i=+d.dataset.k; render(); } };
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')go(1); else if(e.key==='ArrowLeft')go(-1); });
+
+// листание пальцем по сцене
+(function(){ let x0=null; const st=$('#stage');
+  st.addEventListener('touchstart',e=>{ x0=e.touches[0].clientX; },{passive:true});
+  st.addEventListener('touchend',e=>{ if(x0===null)return; const dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>50) go(dx<0?1:-1); },{passive:true});
+})();
+
+// переключатель темы
+const root=document.documentElement;
+(function(){ const t=store.get('aveng_guide_theme'); if(t==='dark'||t==='light')root.setAttribute('data-theme',t); })();
+$('#theme').onclick=()=>{
+  const cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  const nx=cur==='dark'?'light':'dark';
+  root.setAttribute('data-theme',nx); store.set('aveng_guide_theme',nx);
+};
+if(matchMedia('(prefers-reduced-motion:reduce)').matches) document.body.classList.add('reduce');
+
+/* прямая ссылка: #study, #exam или #exam-5 (дорожка и номер шага).
+   Приложение открывает проводник слоем и меняет хеш — поэтому слушаем и hashchange. */
+function fromHash(h){
+  const m=/^(study|exam)(?:-(\d+))?$/.exec((h||'').replace('#',''));
+  if(!m) return false;
+  track=m[1];
+  i=m[2] ? Math.min(Math.max(0,+m[2]-1),TRACKS[track].length-1) : 0;
+  return true;
+}
+window.addEventListener('hashchange',()=>{ if(fromHash(location.hash)) render(); });
+(function(){
+  if(!fromHash(location.hash)){
+    const t=store.get('aveng_guide_track'); if(t==='study'||t==='exam') track=t;
+  }
+  render(false);
+})();
+</script>
+</body>
+</html>

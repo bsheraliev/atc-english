@@ -6,7 +6,7 @@
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
-const APP_VERSION = "1.2.1";
+const APP_VERSION = "1.2.2";
 const CONTACT_TG = "https://t.me/Ori_gemini_bot";   // контакт/поддержка в Telegram
 /* Основные организации/компании ГА РТ для выбора при запросе аттестации.
    «Другая организация…» открывает поле свободного ввода. Список легко расширять. */
@@ -296,6 +296,7 @@ function renderHome() {
       <button class="ghost" onclick="renderSettings()">⚙️ ${t("Настройки")}</button>
       <button class="ghost" onclick="renderRef()">📖 ${t("Справочник")}</button>
     </div>
+    <button class="ghost fullrow" onclick="openGuide('study')">📘 ${t("Как заниматься — проводник")}</button>
     <button class="ghost fullrow" onclick="renderLeaderboard()">🏆 ${t("Лидерборд")}</button>
     <button class="ghost fullrow" onclick="renderCertificate()">🎓 ${t("Сертификат о прохождении")}</button>
     <button class="ghost fullrow" onclick="tgShare()">📨 ${t("Пригласить коллегу")}</button>
@@ -354,6 +355,7 @@ function renderUnlock() {
     </div>
     <div id="licMsg" class="unlock-msg"></div>
     <p class="unlock-note">${t("Нет кода? Обратитесь к вашей организации за кодом доступа.")}</p>
+    <button class="ghost fullrow" onclick="openGuide('exam-1')">📘 ${t("Как открыть полный курс")}</button>
     <a class="primary" style="display:block;text-align:center;text-decoration:none;max-width:340px;margin:8px auto 0" href="${CONTACT_TG}" target="_blank" rel="noopener">${t("✈️ Связаться в Telegram")}</a>
   </div>`;
   const inp = document.getElementById("licCode");
@@ -1098,6 +1100,7 @@ function renderAttest() {
         <button class="next" id="attGo">${t("Начать аттестацию")}</button>
       </div>
     </div>
+    <button class="ghost fullrow" onclick="openGuide('exam-5')">📘 ${t("Как проходит аттестация")}</button>
     <button class="ghost fullrow" onclick="renderAttestLog()">📋 ${t("Журнал аттестаций")}</button>
     <button class="ghost fullrow" onclick="renderHome()">${t("В меню")}</button>`;
   const nm = $("#attName"), un = $("#attUnit"), rq = $("#attReq"), og = $("#attOrg"), ogo = $("#attOrgOther");
@@ -1838,6 +1841,49 @@ function renderElpetResult() {
   if (oc === "ok") confetti();
   save();
 }
+
+/* ===========================================================================
+   ПРОВОДНИК — пошаговая инструкция слоем поверх приложения.
+   Слой лежит в index.html вне #app: экраны перерисовываются через app.innerHTML,
+   и внутри #app слой стирался бы вместе с ними. Переход на guide.html отдельной
+   страницей не годится — теряются введённые ФИО и уже запрошенный код допуска.
+   =========================================================================== */
+const GUIDE_URL = "./guide.html";
+let guideOpen = false;
+function frameGo(frame, url) {
+  try { frame.contentWindow.location.replace(url); } catch (e) { frame.src = url; }
+}
+function openGuide(anchor) {
+  const layer = $("#guideLayer"), frame = $("#guideFrame");
+  if (!layer || !frame) return;
+  track("open/guide" + (anchor ? "/" + anchor : ""));
+  const url = GUIDE_URL + (anchor ? "#" + anchor : "");
+  /* Только replace, никогда frame.src: обычный переход рамки кладёт запись в общую
+     историю, и тогда «назад» на телефоне сначала перелистывает рамку, а не закрывает слой. */
+  frameGo(frame, url);
+  if (guideOpen) return;
+  const ttl = $("#guideTitle"), cls = $("#guideClose");
+  if (ttl) ttl.textContent = "📘 " + t("Проводник AvEng");
+  if (cls) cls.textContent = t("Закрыть") + " ✕";
+  layer.hidden = false;
+  guideOpen = true;
+  document.body.style.overflow = "hidden";
+  document.body.classList.add("guide-open");
+  try { history.pushState({ guide: 1 }, ""); } catch (e) {}
+}
+function closeGuide(fromPop) {
+  const layer = $("#guideLayer");
+  if (!layer || !guideOpen) return;
+  layer.hidden = true;
+  guideOpen = false;
+  document.body.style.overflow = "";
+  document.body.classList.remove("guide-open");
+  const frame = $("#guideFrame");
+  if (frame) frameGo(frame, "about:blank");
+  if (!fromPop) { try { history.back(); } catch (e) {} }   // снимаем запись, добавленную при открытии
+}
+window.addEventListener("popstate", () => { if (guideOpen) closeGuide(true); });   // «назад» на телефоне
+document.addEventListener("keydown", e => { if (e.key === "Escape" && guideOpen) closeGuide(); });
 
 /* ---------- Старт ---------- */
 let pendingChallenge = null;
