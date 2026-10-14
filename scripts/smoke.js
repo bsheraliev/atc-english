@@ -100,6 +100,17 @@ window.AVENG_SMOKE = async function () {
     await step(name, async () => { fn(); }, opts || {});
     renderHome();
   }
+  /* --- аттестация: телефон или Telegram обязателен --- */
+  const fillAtt = c => { renderAttest(); const q = s => document.querySelector(s);
+    q('#attName').value = 'Проверка'; q('#attUnit').value = 'Проверка';
+    const og = q('#attOrg'); og.value = og.options[1].value; og.dispatchEvent(new Event('change'));
+    const ct = q('#attContact'); ct.value = c; ct.dispatchEvent(new Event('input')); };
+  await step('аттестация: без телефона кнопка выключена', async () => { fillAtt(''); },
+    { has: () => document.querySelector('#attReq').disabled });
+  await step('аттестация: с телефоном кнопка включена', async () => { fillAtt('+992 90 123 45 67'); },
+    { has: () => !document.querySelector('#attReq').disabled });
+  renderHome();
+
   /* лидерборд ходит в сеть — сетевую ошибку за поломку не считаем */
   await step('лидерборд', async () => { renderLeaderboard(); }, { wait: 700, network: true });
 
