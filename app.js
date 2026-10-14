@@ -6,7 +6,7 @@
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
-const APP_VERSION = "1.2.2";
+const APP_VERSION = "1.2.3";
 const CONTACT_TG = "https://t.me/Ori_gemini_bot";   // контакт/поддержка в Telegram
 /* Основные организации/компании ГА РТ для выбора при запросе аттестации.
    «Другая организация…» открывает поле свободного ввода. Список легко расширять. */
@@ -23,6 +23,9 @@ const ORGS = [
   "SCAT",
   "East Air"
 ];
+/* Телефон (не меньше 7 цифр) или ник Telegram (@username, 5–32 знака): экзаменатор видит, кто просит код */
+function contactOk(v) { v = (v || "").trim(); return v.replace(/\D/g, "").length >= 7 || /^@?[A-Za-z][A-Za-z0-9_]{4,31}$/.test(v); }
+function contactNorm(v) { v = (v || "").trim(); return /^[A-Za-z][A-Za-z0-9_]{4,31}$/.test(v) ? "@" + v : v; }
 function attOrgVal() {
   const sel = $("#attOrg"); if (!sel) return "";
   return sel.value === "__other" ? ($("#attOrgOther").value || "").trim() : sel.value;
@@ -1080,7 +1083,7 @@ function attFmt(s) { const m = Math.floor(s / 60), x = s % 60; return m + ":" + 
 function attCleanup() { attStopTimer(); attStopQ(); document.body.classList.remove("exam-lock"); }
 function renderAttest() {
   attCleanup(); tgBack(true);
-  att = { name: (att && att.name) || "", unit: (att && att.unit) || "", org: (att && att.org) || "", reqId: null };
+  att = { name: (att && att.name) || "", contact: (att && att.contact) || "", unit: (att && att.unit) || "", org: (att && att.org) || "", reqId: null };
   const orgCustom = att.org && ORGS.indexOf(att.org) < 0;
   const orgOpts = [`<option value="">— ${t("выберите организацию")} —</option>`]
     .concat(ORGS.map(o => `<option value="${esc(o)}"${att.org === o ? " selected" : ""}>${esc(o)}</option>`))
@@ -1090,6 +1093,7 @@ function renderAttest() {
       <div class="open-badge">🎓 ${t("Проктор-экзамен · допуск экзаменатора")}</div>
       <p class="qsub">${t("20 вопросов · лимит 15 мин · проходной 75% · справка о прохождении. Старт — после ввода данных и получения кода допуска у экзаменатора.")}</p>
       <input id="attName" class="select" type="text" placeholder="${t("Фамилия, имя, отчество")}" value="${esc(att.name)}">
+      <input id="attContact" class="select" type="text" inputmode="tel" autocomplete="tel" placeholder="${t("Телефон или Telegram (+992… или @ник)")}" value="${esc(att.contact)}">
       <select id="attOrg" class="select">${orgOpts}</select>
       <input id="attOrgOther" class="select" type="text" placeholder="${t("Название организации")}" value="${orgCustom ? esc(att.org) : ""}" style="${orgCustom ? "" : "display:none"}">
       <input id="attUnit" class="select" type="text" placeholder="${t("Подразделение / должность")}" value="${esc(att.unit)}">
@@ -1103,8 +1107,9 @@ function renderAttest() {
     <button class="ghost fullrow" onclick="openGuide('exam-5')">📘 ${t("Как проходит аттестация")}</button>
     <button class="ghost fullrow" onclick="renderAttestLog()">📋 ${t("Журнал аттестаций")}</button>
     <button class="ghost fullrow" onclick="renderHome()">${t("В меню")}</button>`;
-  const nm = $("#attName"), un = $("#attUnit"), rq = $("#attReq"), og = $("#attOrg"), ogo = $("#attOrgOther");
-  const val = () => { rq.disabled = !(nm.value.trim() && attOrgVal() && un.value.trim()); };
+  const nm = $("#attName"), ct = $("#attContact"), un = $("#attUnit"), rq = $("#attReq"), og = $("#attOrg"), ogo = $("#attOrgOther");
+  const val = () => { rq.disabled = !(nm.value.trim() && contactOk(ct.value) && attOrgVal() && un.value.trim()); };
+  ct.addEventListener("input", val);
   og.addEventListener("change", () => { ogo.style.display = og.value === "__other" ? "" : "none"; if (og.value === "__other") setTimeout(() => ogo.focus(), 30); val(); });
   ogo.addEventListener("input", val);
   nm.addEventListener("input", val); un.addEventListener("input", val); val();
@@ -1114,12 +1119,12 @@ function renderAttest() {
 }
 async function attestRequest() {
   const nm = $("#attName"), un = $("#attUnit"), rq = $("#attReq");
-  att.name = nm.value.trim(); att.unit = un.value.trim(); att.org = attOrgVal();
-  if (!att.name || !att.unit || !att.org) return;
+  att.name = nm.value.trim(); att.unit = un.value.trim(); att.org = attOrgVal(); att.contact = contactNorm($("#attContact").value);
+  if (!att.name || !att.unit || !att.org || !contactOk(att.contact)) return;
   const lbl = rq.textContent; rq.disabled = true; rq.textContent = t("Отправляю запрос…");
   try {
     const r = await fetch(aiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "request", name: att.name, unit: att.unit, org: att.org, subject: "AvEng · Авиационный английский", catName: "Аттестация · " + (ROLE_NAMES[state.role] || "") }) });
+      body: JSON.stringify({ action: "request", name: att.name, contact: att.contact, unit: att.unit, org: att.org, subject: "AvEng · Авиационный английский", catName: "Аттестация · " + (ROLE_NAMES[state.role] || "") }) });
     if (!r.ok) throw new Error("http " + r.status);
     const d = await r.json();
     if (!d.ok || !d.reqId) throw new Error(d.error || "нет ответа сервера");
@@ -1243,7 +1248,7 @@ function attReview() {
 function attReport(pct, ok, total, pass) {
   try {
     fetch(aiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "report", reqId: att.reqId, name: att.name, unit: att.unit, org: att.org || "", subject: "AvEng · Авиационный английский", catName: "Аттестация · " + (ROLE_NAMES[state.role] || ""), pct, ok, total, pass, switches: att.switches, sec: att.elapsed }) });
+      body: JSON.stringify({ action: "report", reqId: att.reqId, name: att.name, contact: att.contact || "", unit: att.unit, org: att.org || "", subject: "AvEng · Авиационный английский", catName: "Аттестация · " + (ROLE_NAMES[state.role] || ""), pct, ok, total, pass, switches: att.switches, sec: att.elapsed }) });
   } catch (e) {}
 }
 function attLoadHist() { try { return JSON.parse(localStorage.getItem(ATT.HIST_KEY) || "[]"); } catch (e) { return []; } }

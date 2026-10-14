@@ -256,3 +256,7 @@ function t(s) {
   if (L === "ru" || !I18N[L]) return s;
   return I18N[L][s] || s;
 }
+
+/* Поле «Телефон или Telegram» на экране аттестации */
+Object.assign(I18N.tg, { "Телефон или Telegram (+992… или @ник)": "Телефон ё Telegram (+992… ё @ном)" });
+Object.assign(I18N.en, { "Телефон или Telegram (+992… или @ник)": "Phone or Telegram (+992… or @username)" });
