@@ -2,7 +2,7 @@
    Стратегия: отдаём из кэша мгновенно, в фоне тянем свежую версию с сети
    и обновляем кэш — поэтому правки сами «долетают» до установленных PWA
    (новый контент виден при следующем запуске, без ручного поднятия версии). */
-const CACHE = "atc-eng-v24";
+const CACHE = "atc-eng-v25";
 const ASSETS = [
   "./",
   "./index.html",
@@ -14,7 +14,9 @@ const ASSETS = [
   "./guide.html",
   "./manifest.webmanifest",
   "./icon.svg",
-  "./icon-180.png"
+  "./icon-180.png",
+  "./ori.png",
+  "./ori-face.png"
 ];
 
 self.addEventListener("install", e => {
