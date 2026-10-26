@@ -6,7 +6,7 @@
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
-const APP_VERSION = "1.2.5";
+const APP_VERSION = "1.2.6";
 /* ДИАГНОСТИКА — текст ошибки на экране вместо пустого экрана. Урок обращения Ш-2 Shohin (2026-10-14):
    в Telegram для iPhone чужой скрипт подменил глобальную функцию, все разделы падали, а причину
    с телефона не было видно сутки. Код замкнут в функции и не опирается на глобальные имена
@@ -78,6 +78,46 @@ const APP_VERSION = "1.2.5";
   };
 })();
 const CONTACT_TG = "https://t.me/Ori_gemini_bot";   // контакт/поддержка в Telegram
+const CONTACT_TG_APP = "tg://resolve?domain=Ori_gemini_bot";   // то же — сразу в приложение Telegram
+const CONTACT_TG_NICK = "@Ori_gemini_bot";
+/* У части провайдеров t.me не открывается (DNS_PROBE…NXDOMAIN). Поэтому ссылки с data-tg:
+   внутри Telegram — openTelegramLink (Telegram открывает сам, без DNS); в браузере — сразу
+   приложение по tg://, а если оно не открылось за 1,5 с — окно с ником бота и «Скопировать». */
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest("a[data-tg]"); if (!a) return;
+  e.preventDefault();
+  if (typeof inTelegram !== "undefined" && inTelegram) { try { TG.openTelegramLink(CONTACT_TG); return; } catch (err) {} }
+  let left = false; const onHide = () => { if (document.hidden) left = true; };
+  document.addEventListener("visibilitychange", onHide); window.addEventListener("blur", onHide);
+  window.location.href = CONTACT_TG_APP;
+  setTimeout(() => {
+    document.removeEventListener("visibilitychange", onHide); window.removeEventListener("blur", onHide);
+    if (!left && !document.hidden) tgFallback();
+  }, 1500);
+});
+function tgFallback() {
+  if (document.getElementById("tgModal")) return;
+  const m = document.createElement("div"); m.id = "tgModal";
+  m.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:18px";
+  m.innerHTML = `<div style="position:relative;width:100%;max-width:360px;box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 20px;text-align:center;box-shadow:var(--shadow);color:var(--txt)">
+    <button id="tgX" aria-label="${t("Закрыть")}" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer">✕</button>
+    <div style="font-size:42px;line-height:1.2">✈️</div>
+    <h3 style="margin:6px 0 8px">${t("Напишите нам в Telegram")}</h3>
+    <p style="color:var(--dim);font-size:13px;line-height:1.5;margin:0 0 14px">${t("Не удалось открыть Telegram автоматически. Откройте Telegram, нажмите поиск и введите:")}</p>
+    <input id="tgNick" readonly value="${CONTACT_TG_NICK}" style="width:100%;box-sizing:border-box;background:var(--panel2);border:1.5px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font-size:16px;font-weight:700;text-align:center">
+    <button id="tgCopy" class="primary" style="display:block;width:100%;margin-top:10px">${t("Скопировать")}</button>
+    <p style="font-size:12px;color:var(--dim);margin:12px 0 0"><a href="${CONTACT_TG}" target="_blank" rel="noopener" style="color:inherit">${t("Открыть через t.me")}</a></p>
+  </div>`;
+  document.body.appendChild(m);
+  const close = () => m.remove();
+  m.querySelector("#tgX").onclick = close;
+  m.onclick = ev => { if (ev.target === m) close(); };
+  m.querySelector("#tgCopy").onclick = () => {
+    const inp = m.querySelector("#tgNick"), btn = m.querySelector("#tgCopy"), ok = () => { btn.textContent = t("Скопировано ✓"); };
+    const legacy = () => { inp.select(); try { document.execCommand("copy"); } catch (err) {} ok(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(CONTACT_TG_NICK).then(ok, legacy); else legacy();
+  };
+}
 /* Основные организации/компании ГА РТ для выбора при запросе аттестации.
    «Другая организация…» открывает поле свободного ввода. Список легко расширять. */
 const ORGS = [
@@ -373,7 +413,7 @@ function renderHome() {
     <button class="ghost fullrow" onclick="renderLeaderboard()">🏆 ${t("Лидерборд")}</button>
     <button class="ghost fullrow" onclick="renderCertificate()">🎓 ${t("Сертификат о прохождении")}</button>
     <button class="ghost fullrow" onclick="tgShare()">📨 ${t("Пригласить коллегу")}</button>
-    <a class="ghost fullrow" style="display:block;text-align:center;text-decoration:none" href="${CONTACT_TG}" target="_blank" rel="noopener">✈️ ${t("Связаться / поддержка")}</a>
+    <a class="ghost fullrow" style="display:block;text-align:center;text-decoration:none" href="${CONTACT_TG}" data-tg target="_blank" rel="noopener">✈️ ${t("Связаться / поддержка")}</a>
     <button class="ghost danger fullrow" onclick="resetAll()">↺ ${t("Сброс прогресса")}</button>
     <p class="disclaimer">${t("Учебный тренажёр на основе ICAO Doc 4444 (гл.12), Doc 9432 и Annex 1, Доп.1. Не заменяет официальные документы и аттестацию.")}</p>
     <p class="disclaimer">© 2026 AvEng. ${t("Все права защищены. Копирование содержимого и кода без письменного разрешения правообладателя запрещено.")} <a href="./TERMS.html" style="color:inherit;text-decoration:underline">${t("Условия")}</a></p>
@@ -429,7 +469,7 @@ function renderUnlock() {
     <div id="licMsg" class="unlock-msg"></div>
     <p class="unlock-note">${t("Нет кода? Обратитесь к вашей организации за кодом доступа.")}</p>
     <button class="ghost fullrow" onclick="openGuide('exam-1')">📘 ${t("Как открыть полный курс")}</button>
-    <a class="primary" style="display:block;text-align:center;text-decoration:none;max-width:340px;margin:8px auto 0" href="${CONTACT_TG}" target="_blank" rel="noopener">${t("✈️ Связаться в Telegram")}</a>
+    <a class="primary" style="display:block;text-align:center;text-decoration:none;max-width:340px;margin:8px auto 0" href="${CONTACT_TG}" data-tg target="_blank" rel="noopener">${t("✈️ Связаться в Telegram")}</a>
   </div>`;
   const inp = document.getElementById("licCode");
   if (inp) { inp.focus(); inp.addEventListener("keydown", e => { if (e.key === "Enter") doUnlock(); }); }
