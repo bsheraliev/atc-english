@@ -6,7 +6,7 @@
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
-const APP_VERSION = "1.3.2";
+const APP_VERSION = "1.3.3";
 /* ДИАГНОСТИКА — текст ошибки на экране вместо пустого экрана. Урок обращения Ш-2 Shohin (2026-10-14):
    в Telegram для iPhone чужой скрипт подменил глобальную функцию, все разделы падали, а причину
    с телефона не было видно сутки. Код замкнут в функции и не опирается на глобальные имена
@@ -437,7 +437,8 @@ function dayCard() {
       <div class="dayfoot"><span>${t(CAT_NAMES[q.cat] || "Прочее")}</span><button class="daygo" onclick="startDayQuestion()">${t("Ответить")} →</button></div>
     </div>`;
 }
-/* Окно «Сообщить об ошибке / идея» из feedback.js — открываем его же кнопкой */
+/* Окно «Сообщить об ошибке / идея» из feedback.js — открываем его же кнопкой
+   (на экранах с Ори она спрятана: форма открывается из подсказки Ори, обращение №19) */
 function fbkOpen() { const b = document.querySelector(".fbk-btn"); if (b) b.click(); else toast(t("Форма отзыва ещё загружается")); }
 
 /* ───────── Ори — персонаж-помощник (обращение №19, по образцу BRUce из приложения аэропорта) ─────────
@@ -471,6 +472,7 @@ function oriToggle() {
     <div class="orirow">
       <a class="orisec" href="${CONTACT_TG}" data-tg target="_blank" rel="noopener">💬 ${t("Чат с Ори")}</a>
       <button class="orisec" onclick="oriClose();openGuide('study')">📘 ${t("Как заниматься")}</button>
+      <button class="orisec wide" onclick="oriClose();fbkOpen()">✍️ ${t("Сообщить об ошибке или пожелание")}</button>
     </div>`;
   document.body.appendChild(p);
 }
