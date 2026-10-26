@@ -65,7 +65,7 @@ window.AVENG_SMOKE = async function () {
   /* --- языки: главный экран на всех трёх --- */
   for (const L of LANGS) {
     await step('[' + L + '] главный экран', async () => { changeLang(L); },
-      { wait: 200, has: () => view().querySelectorAll('.langchip').length === 3 && view().querySelector('.menu') });
+      { wait: 200, has: () => view().querySelectorAll('.langchip').length === 3 && view().querySelector('.quick') && view().querySelectorAll('.tabbar .tab').length === 5 });
   }
   changeLang('ru');
 
@@ -73,7 +73,7 @@ window.AVENG_SMOKE = async function () {
   for (const role of ROLES) {
     const P = '[' + role + '] ';
     const list = menuFor(role);
-    await step(P + 'меню роли', async () => { setRole(role); },
+    await step(P + 'меню роли (вкладка «Разделы»)', async () => { setRole(role); renderSections('all'); },
       { wait: 200, has: () => view().querySelectorAll('.menu > .tile, .menu > .tile.locked').length === list.length });
 
     for (const m of list) {
@@ -85,6 +85,25 @@ window.AVENG_SMOKE = async function () {
     }
   }
   setRole('controller');
+
+  /* --- вкладки и главный экран по образцу приложения аэропорта (обращение №16) --- */
+  for (const g of GROUPS) {
+    await step('разделы: фильтр «' + g.n + '»', async () => { renderSections(g.k); },
+      { has: () => secGroup !== g.k || view().querySelectorAll('.menu > .tile').length === roleMenu().filter(m => g.k === 'all' || m.grp === g.k).length });
+  }
+  renderSections('all');
+  await step('вкладка «Прогресс»', async () => { renderProgress(); }, { has: () => view().querySelectorAll('.lrow').length >= 5 && view().querySelector('.tab.on') });
+  await step('вкладка «Ещё»', async () => { renderMore(); }, { has: () => view().querySelector('.lgroup a[data-tg]') && view().querySelectorAll('.langchip').length === 3 });
+  await step('«Ещё»: смена языка остаётся на экране', async () => { changeLang('en', renderMore); },
+    { has: () => !!view().querySelector('.acc') && /More/.test(view().querySelector('.pageh').textContent) });
+  changeLang('ru');
+  await step('главный: поиск находит раздел', async () => { renderHome(); homeSearch('алфавит'); },
+    { has: () => view().querySelectorAll('#searchRes .sres').length > 0 });
+  await step('главный: вопрос дня открывается', async () => { renderHome(); startDayQuestion(); },
+    { has: () => !!view().querySelector('.qtext') });
+  await step('главный: внутренний экран без нижней панели', async () => { renderHome(); renderAch(); },
+    { has: () => !view().querySelector('.tabbar') && !document.body.classList.contains('has-tabs') });
+  renderHome();
 
   /* --- экраны из нижней части главного --- */
   const screens = [

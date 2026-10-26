@@ -6,7 +6,7 @@
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
-const APP_VERSION = "1.2.6";
+const APP_VERSION = "1.3.0";
 /* ДИАГНОСТИКА — текст ошибки на экране вместо пустого экрана. Урок обращения Ш-2 Shohin (2026-10-14):
    в Telegram для iPhone чужой скрипт подменил глобальную функцию, все разделы падали, а причину
    с телефона не было видно сутки. Код замкнут в функции и не опирается на глобальные имена
@@ -207,27 +207,27 @@ const ROLE_NAMES = { controller: "Диспетчер", pilot: "Пилот", cabi
 /* Меню главного экрана: каждый раздел привязан к ролям. "all" — общий (виден всем).
    При выборе роли показываются только её разделы + общие. */
 const MENU = [
-  { go: "alphabet", icon: "🔤", title: "Радиоалфавит", sub: "Алфавит ИКАО + числа · Doc 9432", roles: ["all"] },
-  { go: "quiz-phraseology", icon: "🗼", title: "Фразеология", sub: "Стандартные команды · Doc 4444 гл.12", roles: ["controller", "pilot"] },
-  { go: "quiz-standard", icon: "📻", title: "Стандартные слова", sub: "AFFIRM, WILCO, ROGER… · Doc 9432", roles: ["controller", "pilot"] },
-  { go: "quiz-readback", icon: "🔁", title: "Read-back", sub: "Обратный повтор · Doc 4444 12.3.2", roles: ["controller", "pilot"] },
-  { go: "quiz-numbers", icon: "🔢", title: "Числа и частоты", sub: "Произношение цифр · Doc 9432", roles: ["controller", "pilot"] },
-  { go: "quiz-weather", icon: "🌦️", title: "Метео-фразеология", sub: "QNH, RVR, CAVOK, ветер · Doc 4444/Annex 3", roles: ["controller", "pilot"] },
-  { go: "quiz-emergency", icon: "🚨", title: "Аварийные процедуры", sub: "MAYDAY, 7700/7600/7500 · Doc 4444 гл.15", roles: ["controller", "pilot"] },
-  { go: "quiz-coordination", icon: "🔀", title: "Координация", sub: "Estimate, release, control · Doc 4444 гл.10", roles: ["controller"] },
-  { go: "quiz-airport", icon: "🛃", title: "Аэропорт · пассажиры", sub: "Досмотр, регистрация · англ. с пассажирами", roles: ["airport"] },
-  { go: "quiz-pilot", icon: "✈️", title: "Пилот · радиообмен", sub: "С позиции экипажа · Doc 4444/9432", roles: ["pilot"] },
-  { go: "quiz-cabin", icon: "🧳", title: "Бортпроводник · сервис", sub: "Объявления и общение с пассажирами", roles: ["cabin"] },
-  { go: "quiz-vocab", icon: "📖", title: "Авиатермины", sub: "Лексика аэропорта и полёта · словари ИКАО", roles: ["all"] },
-  { go: "quiz-idioms", icon: "💬", title: "Идиомы и фразовые глаголы", sub: "Plain English для Level 5–6 · go around, level off…", roles: ["controller", "pilot"] },
-  { go: "listening", icon: "👂", title: "На слух", sub: "Диктор читает указание · выбери read-back", roles: ["controller", "pilot"] },
-  { go: "pron", icon: "🎤", title: "Произношение", sub: "Скажи фразу вслух · оценка речи", roles: ["controller", "pilot"] },
-  { go: "dialogues", icon: "🎧", title: "Радиообмен", sub: "Собери диалог УВД ↔ борт", roles: ["controller", "pilot"] },
-  { go: "scenario", icon: "🎙️", title: "Живой эфир", sub: "Целая смена TJK101 · таймер", roles: ["controller", "pilot"] },
-  { go: "elpet", icon: "📋", title: "Экзамен ELPET / TEA", sub: "Формат TEA · 3 части · 6 критериев LPR", roles: ["controller", "pilot"] },
-  { go: "exam", icon: "📝", title: "Аттестация", sub: "Проктор-экзамен · допуск экзаменатора + справка", roles: ["all"] },
-  { go: "blitz", icon: "⏱️", title: "Экзамен на время", sub: "15 вопросов · таймер 20 c", roles: ["all"] },
-  { go: "mistakes", icon: "🧯", title: "Работа над ошибками", sub: "", roles: ["all"] }
+  { go: "alphabet", grp: "vocab", icon: "🔤", title: "Радиоалфавит", sub: "Алфавит ИКАО + числа · Doc 9432", roles: ["all"] },
+  { go: "quiz-phraseology", grp: "radio", icon: "🗼", title: "Фразеология", sub: "Стандартные команды · Doc 4444 гл.12", roles: ["controller", "pilot"] },
+  { go: "quiz-standard", grp: "radio", icon: "📻", title: "Стандартные слова", sub: "AFFIRM, WILCO, ROGER… · Doc 9432", roles: ["controller", "pilot"] },
+  { go: "quiz-readback", grp: "radio", icon: "🔁", title: "Read-back", sub: "Обратный повтор · Doc 4444 12.3.2", roles: ["controller", "pilot"] },
+  { go: "quiz-numbers", grp: "radio", icon: "🔢", title: "Числа и частоты", sub: "Произношение цифр · Doc 9432", roles: ["controller", "pilot"] },
+  { go: "quiz-weather", grp: "radio", icon: "🌦️", title: "Метео-фразеология", sub: "QNH, RVR, CAVOK, ветер · Doc 4444/Annex 3", roles: ["controller", "pilot"] },
+  { go: "quiz-emergency", grp: "radio", icon: "🚨", title: "Аварийные процедуры", sub: "MAYDAY, 7700/7600/7500 · Doc 4444 гл.15", roles: ["controller", "pilot"] },
+  { go: "quiz-coordination", grp: "radio", icon: "🔀", title: "Координация", sub: "Estimate, release, control · Doc 4444 гл.10", roles: ["controller"] },
+  { go: "quiz-airport", grp: "vocab", icon: "🛃", title: "Аэропорт · пассажиры", sub: "Досмотр, регистрация · англ. с пассажирами", roles: ["airport"] },
+  { go: "quiz-pilot", grp: "radio", icon: "✈️", title: "Пилот · радиообмен", sub: "С позиции экипажа · Doc 4444/9432", roles: ["pilot"] },
+  { go: "quiz-cabin", grp: "vocab", icon: "🧳", title: "Бортпроводник · сервис", sub: "Объявления и общение с пассажирами", roles: ["cabin"] },
+  { go: "quiz-vocab", grp: "vocab", icon: "📖", title: "Авиатермины", sub: "Лексика аэропорта и полёта · словари ИКАО", roles: ["all"] },
+  { go: "quiz-idioms", grp: "vocab", icon: "💬", title: "Идиомы и фразовые глаголы", sub: "Plain English для Level 5–6 · go around, level off…", roles: ["controller", "pilot"] },
+  { go: "listening", grp: "audio", icon: "👂", title: "На слух", sub: "Диктор читает указание · выбери read-back", roles: ["controller", "pilot"] },
+  { go: "pron", grp: "audio", icon: "🎤", title: "Произношение", sub: "Скажи фразу вслух · оценка речи", roles: ["controller", "pilot"] },
+  { go: "dialogues", grp: "radio", icon: "🎧", title: "Радиообмен", sub: "Собери диалог УВД ↔ борт", roles: ["controller", "pilot"] },
+  { go: "scenario", grp: "radio", icon: "🎙️", title: "Живой эфир", sub: "Целая смена TJK101 · таймер", roles: ["controller", "pilot"] },
+  { go: "elpet", grp: "check", icon: "📋", title: "Экзамен ELPET / TEA", sub: "Формат TEA · 3 части · 6 критериев LPR", roles: ["controller", "pilot"] },
+  { go: "exam", grp: "check", icon: "📝", title: "Аттестация", sub: "Проктор-экзамен · допуск экзаменатора + справка", roles: ["all"] },
+  { go: "blitz", grp: "check", icon: "⏱️", title: "Экзамен на время", sub: "15 вопросов · таймер 20 c", roles: ["all"] },
+  { go: "mistakes", grp: "check", icon: "🧯", title: "Работа над ошибками", sub: "", roles: ["all"] }
 ];
 
 /* ───────── Управление доступностью плиток ─────────
@@ -358,24 +358,38 @@ function unlock(id) {
    =========================================================================== */
 const app = $("#app");
 
-function renderHome() {
-  if (typeof attCleanup === "function") attCleanup();
-  const r = rankFor(state.xp);
-  const nx = nextRank(state.xp);
+/* ───────── Вкладки и главный экран по образцу приложения аэропорта (обращение №16) ─────────
+   Нижняя панель: Главная · Разделы · Аттестация · Прогресс · Ещё. Панель есть только на
+   экранах-вкладках; внутренние экраны (квиз, настройки…) открываются как раньше, с «‹ Меню». */
+const ROLE_ICONS = { controller: "🗼", pilot: "👨‍✈️", cabin: "🧳", airport: "🛃" };
+const GROUPS = [
+  { k: "all", n: "Все" }, { k: "radio", n: "Радиообмен" }, { k: "vocab", n: "Лексика" },
+  { k: "audio", n: "Слух и речь" }, { k: "check", n: "Проверка" }
+];
+let secGroup = "all";
+function roleMenu() { return MENU.filter(m => m.roles.indexOf("all") >= 0 || m.roles.indexOf(state.role) >= 0); }
+function menuTile(m, i) {
+  if (window.AvEngLic && AvEngLic.locked(m.go)) return lockedTile(m.icon, t(m.title), t(m.sub));
+  return tile(m.go, m.icon, t(m.title), m.go === "mistakes"
+    ? (mistakeCount() ? mistakeCount() + " " + t("на повторение") : t("ошибок пока нет"))
+    : t(m.sub), isWip(m.go, i));
+}
+function tabbar(cur) {
+  document.body.classList.add("has-tabs");
+  const tabs = [["home", "🏠", "Главная", "renderHome()"], ["sections", "📚", "Разделы", "renderSections()"],
+    ["exam", "📝", "Аттестация", "route('exam')"], ["progress", "📈", "Прогресс", "renderProgress()"], ["more", "⋯", "Ещё", "renderMore()"]];
+  return `<div class="tabspace"></div><nav class="tabbar">${tabs.map(([k, ic, n, fn]) =>
+    `<button class="tab ${cur === k ? "on" : ""}" onclick="${fn}"><span class="tic">${ic}</span><span>${t(n)}</span></button>`).join("")}</nav>`;
+}
+function langChips(back) {
+  return `<div class="langrow">${["ru", "tg", "en"].map(L =>
+    `<button class="langchip ${(state.lang || "ru") === L ? "on" : ""}" onclick="changeLang('${L}'${back ? ", " + back : ""})">${LANG_NAMES[L]}</button>`).join("")}</div>`;
+}
+function rankBlock() {
+  const r = rankFor(state.xp), nx = nextRank(state.xp);
   const prog = nx ? Math.round(((state.xp - r.xp) / (nx.xp - r.xp)) * 100) : 100;
-  tgBack(false);
   const todayC = (state.daily.day === todayStr()) ? state.daily.count : 0;
-  app.innerHTML = `
-    <div class="langrow">
-      ${["ru", "tg", "en"].map(L => `<button class="langchip ${(state.lang || "ru") === L ? "on" : ""}" onclick="changeLang('${L}')">${LANG_NAMES[L]}</button>`).join("")}
-    </div>
-    <div class="brand">✈ <b>AvEng</b> <span>· ${t("авиационный английский")}</span></div>
-    <div class="roles">
-      ${["controller", "pilot", "cabin", "airport"].map(rk =>
-        `<button class="rolechip ${state.role === rk ? "on" : ""}" onclick="setRole('${rk}')">${t(ROLE_NAMES[rk])}</button>`
-      ).join("")}
-    </div>
-    <div class="rankcard">
+  return `<div class="rankcard">
       <div class="rankicon">${r.icon}</div>
       <div class="rankinfo">
         <div class="rankname">${t(r.name)}</div>
@@ -384,40 +398,174 @@ function renderHome() {
         <div class="xpline">${state.xp} XP ${nx ? `· ${t("до")} «${t(nx.name)}» ${nx.xp - state.xp} XP` : "· " + t("максимум!")}</div>
       </div>
     </div>
-
     <div class="daily">
       <span>🎯 ${t("Сегодня")} <b>${Math.min(todayC, state.daily.goal)}/${state.daily.goal}</b></span>
       <div class="dbar"><div class="dfill" style="width:${Math.min(100, Math.round(todayC / state.daily.goal * 100))}%"></div></div>
       <span>🔥 <b>${state.daily.streak}</b> ${t("дн.")}</span>
-    </div>
+    </div>`;
+}
+/* Карточки «Вам понравится…»: что попробовать — своё для роли */
+function promoCards() {
+  const radio = state.role === "controller" || state.role === "pilot";
+  const cards = [
+    radio ? { tag: "Игра", fn: "route('scenario')", ic: "🎙️", h: "Живой эфир: проведите смену TJK101" }
+      : { tag: "Тест", fn: "route('blitz')", ic: "⏱️", h: "Экзамен на время: 15 вопросов" },
+    { tag: "Вызов", fn: "startChallenge()", ic: "⚔️", h: "Бросьте вызов коллеге: 10 вопросов" },
+    radio ? { tag: "Экзамен", fn: "route('elpet')", ic: "📋", h: "Пробный экзамен ELPET / TEA" }
+      : { tag: "Экзамен", fn: "route('exam')", ic: "📝", h: "Аттестация с экзаменатором" },
+    { tag: "Гид", fn: "openGuide('study')", ic: "📘", h: "Как заниматься — пошагово" }
+  ];
+  return cards.map((c, i) => `<button class="promo p${i + 1}" onclick="${c.fn}">
+      <span class="pic">${c.ic}</span><span class="ptag">${t(c.tag)}</span><span class="ph">${t(c.h)}</span></button>`).join("");
+}
+/* «Вопрос дня» — один и тот же весь день для роли (как погода в приложении аэропорта) */
+function dayQuestion() {
+  const all = closedPool(DATA.quiz || []);
+  const mine = all.filter(q => roleCats().indexOf(q.cat) >= 0);
+  const src = mine.length ? mine : all;
+  return src.length ? src[hashSeed(todayStr() + "|" + state.role) % src.length] : null;
+}
+function startDayQuestion() { const q = dayQuestion(); if (q) startQuiz([q], t("Вопрос дня"), q.cat); }
+function dayCard() {
+  const q = dayQuestion();
+  if (!q) return "";
+  const d = new Date();
+  return `<div class="daycard">
+      <div class="dayhead"><span>📅 ${t("Вопрос дня")}</span><span>${d.getDate()}.${String(d.getMonth() + 1).padStart(2, "0")}</span></div>
+      <div class="dayq">${esc(q.q)}</div>
+      <div class="dayfoot"><span>${t(CAT_NAMES[q.cat] || "Прочее")}</span><button class="daygo" onclick="startDayQuestion()">${t("Ответить")} →</button></div>
+    </div>`;
+}
+/* Окно «Сообщить об ошибке / идея» из feedback.js — открываем его же кнопкой */
+function fbkOpen() { const b = document.querySelector(".fbk-btn"); if (b) b.click(); else toast(t("Форма отзыва ещё загружается")); }
 
+function renderHome() {
+  if (typeof attCleanup === "function") attCleanup();
+  tgBack(false);
+  const list = roleMenu();
+  const quick = list.filter(m => m.go !== "mistakes" && m.go !== "exam").slice(0, 5);
+  const lk = go => window.AvEngLic && AvEngLic.locked(go);
+  app.innerHTML = `
+    <header class="hero">
+      ${langChips()}
+      <div class="brand">✈ <b>AvEng</b> <span>· ${t("авиационный английский")}</span></div>
+      <h1 class="hero-h">${t("Добро пожаловать в AvEng!")}</h1>
+      <div class="hero-sub">${t("Радиообмен и авиационный английский по ИКАО")}</div>
+    </header>
+    <div class="searchcard">
+      <div class="seg">
+        ${["controller", "pilot", "cabin", "airport"].map(rk =>
+          `<button class="rolechip ${state.role === rk ? "on" : ""}" onclick="setRole('${rk}')">${ROLE_ICONS[rk]} ${t(rk === "airport" ? "Аэропорт" : ROLE_NAMES[rk])}</button>`).join("")}
+      </div>
+      <label class="search"><span>🔍</span><input id="homeSearch" type="search" autocomplete="off" placeholder="${t("Раздел, тема или слово…")}" oninput="homeSearch(this.value)"></label>
+      <div id="searchRes"></div>
+    </div>
+    <div class="quick">
+      ${quick.map(m => `<button class="qk" onclick="route('${m.go}')"><span class="qkc">${m.icon}${lk(m.go) ? '<i class="qklock">🔒</i>' : ""}</span><span class="qkt">${t(m.title)}</span></button>`).join("")}
+      <button class="qk" onclick="renderSections()"><span class="qkc more">→</span><span class="qkt">${t("Все разделы")}</span></button>
+    </div>
+    ${rankBlock()}
     ${licenseBanner()}
-    <div class="menu">
-      ${MENU.filter(m => m.roles.indexOf("all") >= 0 || m.roles.indexOf(state.role) >= 0).map((m, i) => {
-        if (window.AvEngLic && AvEngLic.locked(m.go)) return lockedTile(m.icon, t(m.title), t(m.sub));
-        return tile(m.go, m.icon, t(m.title), m.go === "mistakes"
-          ? (mistakeCount() ? mistakeCount() + " " + t("на повторение") : t("ошибок пока нет"))
-          : t(m.sub), isWip(m.go, i));
-      }).join("")}
+    <div class="sechead"><b>${t("Вам понравится…")}</b><button class="link" onclick="renderSections()">${t("Все разделы")}</button></div>
+    <div class="promos">${promoCards()}</div>
+    <div class="sechead"><b>${t("Полезно знать")}</b></div>
+    ${dayCard()}
+    <div class="ratecard">
+      <div class="rateic">⭐⭐⭐</div>
+      <b>${t("Нравится AvEng?")}</b>
+      <button class="ratebtn" onclick="fbkOpen()">${t("Оставить отзыв")}</button>
     </div>
-
-    <div class="row2">
-      <button class="ghost" onclick="renderAch()">🏅 ${t("Ачивки")} (${Object.keys(state.achievements).length}/${DATA.achievements.length})</button>
-      <button class="ghost" onclick="renderStats()">📊 ${t("Статистика")}</button>
-    </div>
-    <div class="row2">
-      <button class="ghost" onclick="renderSettings()">⚙️ ${t("Настройки")}</button>
-      <button class="ghost" onclick="renderRef()">📖 ${t("Справочник")}</button>
-    </div>
-    <button class="ghost fullrow" onclick="openGuide('study')">📘 ${t("Как заниматься — проводник")}</button>
-    <button class="ghost fullrow" onclick="renderLeaderboard()">🏆 ${t("Лидерборд")}</button>
-    <button class="ghost fullrow" onclick="renderCertificate()">🎓 ${t("Сертификат о прохождении")}</button>
-    <button class="ghost fullrow" onclick="tgShare()">📨 ${t("Пригласить коллегу")}</button>
-    <a class="ghost fullrow" style="display:block;text-align:center;text-decoration:none" href="${CONTACT_TG}" data-tg target="_blank" rel="noopener">✈️ ${t("Связаться / поддержка")}</a>
-    <button class="ghost danger fullrow" onclick="resetAll()">↺ ${t("Сброс прогресса")}</button>
-    <p class="disclaimer">${t("Учебный тренажёр на основе ICAO Doc 4444 (гл.12), Doc 9432 и Annex 1, Доп.1. Не заменяет официальные документы и аттестацию.")}</p>
-    <p class="disclaimer">© 2026 AvEng. ${t("Все права защищены. Копирование содержимого и кода без письменного разрешения правообладателя запрещено.")} <a href="./TERMS.html" style="color:inherit;text-decoration:underline">${t("Условия")}</a></p>
     <p class="disclaimer verline">${t("Версия")} ${APP_VERSION} · ${t("вопросов")}: ${DATA.quiz.length}</p>
+    ${tabbar("home")}
+  `;
+}
+/* Поиск на главном: разделы роли по названию + тренировка по вопросам со словом */
+let searchHits = [];
+function homeSearch(v) {
+  const box = document.getElementById("searchRes"); if (!box) return;
+  const s = (v || "").trim().toLowerCase();
+  if (s.length < 2) { box.innerHTML = ""; return; }
+  const secs = roleMenu().filter(m => (t(m.title) + " " + t(m.sub) + " " + m.title + " " + m.sub).toLowerCase().indexOf(s) >= 0).slice(0, 5);
+  searchHits = (DATA.quiz || []).filter(q => (q.q + " " + (q.a || []).join(" ")).toLowerCase().indexOf(s) >= 0);
+  box.innerHTML = secs.map(m => `<button class="sres" onclick="route('${m.go}')"><span>${m.icon}</span><b>${t(m.title)}</b><i>›</i></button>`).join("")
+    + (searchHits.length ? `<button class="sres" onclick="startSearchQuiz()"><span>🎯</span><b>${t("Тренировка по запросу")}: ${searchHits.length} ${t("вопр.")}</b><i>›</i></button>` : "")
+    + (!secs.length && !searchHits.length ? `<div class="snone">${t("Ничего не найдено")}</div>` : "");
+}
+function startSearchQuiz() { if (searchHits.length) startQuiz(shuffle(searchHits).slice(0, 15), t("Тренировка по запросу"), null); }
+
+function renderSections(g) {
+  if (typeof attCleanup === "function") attCleanup();
+  if (g) secGroup = g;
+  tgBack(false);
+  const all = roleMenu().map((m, i) => ({ m, i }));
+  const groups = GROUPS.filter(x => x.k === "all" || all.some(y => y.m.grp === x.k));
+  if (!groups.some(x => x.k === secGroup)) secGroup = "all";
+  const list = all.filter(x => secGroup === "all" || x.m.grp === secGroup);
+  app.innerHTML = `
+    <h1 class="pageh">${t("Разделы")}</h1>
+    <div class="pagesub">${ROLE_ICONS[state.role] || ""} ${t(ROLE_NAMES[state.role] || "")} · <button class="link" onclick="renderHome()">${t("сменить роль")}</button></div>
+    <div class="chips">${groups.map(x => `<button class="chip ${secGroup === x.k ? "on" : ""}" onclick="renderSections('${x.k}')">${t(x.n)}</button>`).join("")}</div>
+    ${licenseBanner()}
+    <div class="menu svc">${list.map(x => menuTile(x.m, x.i).replace('class="tile', 'class="tile g-' + x.m.grp)).join("")}</div>
+    ${tabbar("sections")}
+  `;
+}
+function lrow(ic, title, sub, fn, cls) {
+  return `<button class="lrow ${cls || ""}" onclick="${fn}"><span class="lic">${ic}</span><span class="ltx"><b>${title}</b>${sub ? `<small>${sub}</small>` : ""}</span><span class="lchev">›</span></button>`;
+}
+function renderProgress() {
+  if (typeof attCleanup === "function") attCleanup();
+  tgBack(false);
+  app.innerHTML = `
+    <h1 class="pageh">${t("Прогресс")}</h1>
+    ${rankBlock()}
+    <div class="lgroup">
+      ${lrow("🏅", t("Ачивки"), Object.keys(state.achievements).length + " / " + DATA.achievements.length, "renderAch()")}
+      ${lrow("📊", t("Статистика"), t("Точность по темам"), "renderStats()")}
+      ${lrow("🧯", t("Работа над ошибками"), mistakeCount() ? mistakeCount() + " " + t("на повторение") : t("ошибок пока нет"), "route('mistakes')")}
+      ${lrow("🏆", t("Лидерборд"), t("Игроки и команды"), "renderLeaderboard()")}
+      ${lrow("🎓", t("Сертификат о прохождении"), t("Ранг, XP и точность"), "renderCertificate()")}
+      ${lrow("🗂️", t("Журнал аттестаций"), t("Результаты на этом устройстве"), "renderAttestLog()")}
+    </div>
+    ${tabbar("progress")}
+  `;
+}
+function renderMore() {
+  if (typeof attCleanup === "function") attCleanup();
+  tgBack(false);
+  const full = window.AvEngLic && AvEngLic.isFull();
+  const org = full ? AvEngLic.org() : "", exp = full ? AvEngLic.expires() : "";
+  app.innerHTML = `
+    <h1 class="pageh">${t("Ещё")}</h1>
+    <div class="lhead">${t("Мой доступ")}</div>
+    <div class="acc">
+      ${full ? `<b>✅ ${t("Полный доступ")}</b><small>${org ? org : ""}${exp ? (org ? " · " : "") + t("до") + " " + exp : ""}</small>`
+        : `<b>🔒 ${t("Демо-версия")}</b><small>${t("Полный курс — по коду организации.")}</small>
+        <ul class="ticks"><li>${t("227 вопросов по 13 темам")}</li><li>${t("Радиообмен, аудирование и ELPET/TEA")}</li><li>${t("Аттестация со справкой")}</li></ul>
+        <button class="primary fullrow" onclick="renderUnlock()">${t("Ввести код организации")}</button>`}
+    </div>
+    <div class="lhead">${t("Помощь")}</div>
+    <div class="lgroup">
+      ${lrow("📘", t("Как заниматься — проводник"), t("Пошаговая инструкция"), "openGuide('study')")}
+      <a class="lrow" href="${CONTACT_TG}" data-tg target="_blank" rel="noopener"><span class="lic">✈️</span><span class="ltx"><b>${t("Связаться / поддержка")}</b><small>${t("Ответим в Telegram")}</small></span><span class="lchev">›</span></a>
+      ${lrow("🐞", t("Сообщить об ошибке"), t("Или предложить идею"), "fbkOpen()")}
+    </div>
+    <div class="lhead">${t("Настройки")}</div>
+    <div class="lgroup">
+      <div class="lrow static"><span class="lic">🌐</span><span class="ltx"><b>${t("Язык")}</b></span>${langChips("renderMore")}</div>
+      ${lrow("⚙️", t("Настройки"), t("Звук, голос, роль"), "renderSettings()")}
+      ${lrow("↺", t("Сброс прогресса"), "", "resetAll()", "danger")}
+    </div>
+    <div class="lhead">${t("О приложении")}</div>
+    <div class="lgroup">
+      ${lrow("📖", t("Справочник"), t("Алфавит, числа, стандартные слова"), "renderRef()")}
+      ${lrow("📨", t("Пригласить коллегу"), "", "tgShare()")}
+      <a class="lrow" href="./TERMS.html"><span class="lic">📄</span><span class="ltx"><b>${t("Условия")}</b></span><span class="lchev">›</span></a>
+    </div>
+    <p class="disclaimer">${t("Учебный тренажёр на основе ICAO Doc 4444 (гл.12), Doc 9432 и Annex 1, Доп.1. Не заменяет официальные документы и аттестацию.")}</p>
+    <p class="disclaimer">© 2026 AvEng. ${t("Все права защищены. Копирование содержимого и кода без письменного разрешения правообладателя запрещено.")}</p>
+    <p class="disclaimer verline">${t("Версия")} ${APP_VERSION} · ${t("вопросов")}: ${DATA.quiz.length}</p>
+    ${tabbar("more")}
   `;
 }
 function tile(go, icon, title, sub, wip) {
@@ -523,6 +671,7 @@ function route(go) {
 /* ---------- Топбар ---------- */
 function topbar(title) {
   tgBack(true);
+  document.body.classList.remove("has-tabs");
   return `<div class="topbar">
     <button class="back" onclick="renderHome()">${t("‹ Меню")}</button>
     <span class="ttitle">${title}</span>
@@ -1414,7 +1563,7 @@ function renderStats() {
 }
 
 /* ---------- Язык ---------- */
-function changeLang(L) { state.lang = L; save(); renderHome(); }
+function changeLang(L, back) { state.lang = L; save(); (back || renderHome)(); }
 
 /* ---------- Лидерборд (Google Apps Script + Таблица, как в «Ремонте») ----------
    После деплоя Web App вставьте его URL в scriptUrl (код: backend/leaderboard.gs). Пусто = «не настроено». */
