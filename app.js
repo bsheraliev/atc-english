@@ -6,7 +6,7 @@
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
-const APP_VERSION = "1.3.3";
+const APP_VERSION = "1.3.4";
 /* ДИАГНОСТИКА — текст ошибки на экране вместо пустого экрана. Урок обращения Ш-2 Shohin (2026-10-14):
    в Telegram для iPhone чужой скрипт подменил глобальную функцию, все разделы падали, а причину
    с телефона не было видно сутки. Код замкнут в функции и не опирается на глобальные имена
@@ -379,7 +379,7 @@ function tabbar(cur) {
   const tabs = [["home", "🏠", "Главная", "renderHome()"], ["sections", "📚", "Разделы", "renderSections()"],
     ["exam", "📝", "Аттестация", "route('exam')"], ["progress", "📈", "Прогресс", "renderProgress()"], ["more", "⋯", "Ещё", "renderMore()"]];
   oriClose();
-  return `${oriButton()}<div class="tabspace"></div><nav class="tabbar">${tabs.map(([k, ic, n, fn]) =>
+  return `${oriButton()}<nav class="tabbar">${tabs.map(([k, ic, n, fn]) =>
     `<button class="tab ${cur === k ? "on" : ""}" onclick="${fn}"><span class="tic">${ic}</span><span>${t(n)}</span></button>`).join("")}</nav>`;
 }
 function langChips(back) {
@@ -656,7 +656,7 @@ function lockedTile(icon, title, sub) {
 }
 function renderUnlock() {
   track("open/unlock");
-  app.innerHTML = `${topbar(t("Полный доступ"))}
+  app.innerHTML = `${topbar(t("Полный доступ"), "more")}
   <div class="unlock">
     <div class="unlock-hero">✈🔓</div>
     <h2>${t("Полный курс AvEng")}</h2>
@@ -720,7 +720,9 @@ function route(go) {
 }
 
 /* ---------- Топбар ---------- */
-function topbar(title) {
+/* tab — какая вкладка подсвечена внизу: на экранах, куда ведут вкладки (аттестация, ачивки,
+   настройки…), нижняя панель остаётся; без tab (квиз, тренажёры) — панели нет (обращение №16). */
+function topbar(title, tab) {
   tgBack(true);
   document.body.classList.remove("has-tabs");
   oriClose();
@@ -728,7 +730,7 @@ function topbar(title) {
     <button class="back" onclick="renderHome()">${t("‹ Меню")}</button>
     <span class="ttitle">${title}</span>
     <span class="xpchip">${state.xp} XP</span>
-  </div>`;
+  </div>` + (tab ? tabbar(tab) : "");
 }
 
 /* ===========================================================================
@@ -1237,7 +1239,7 @@ function renderLstQ() {
    АЧИВКИ / СПРАВОЧНИК / ПРОЧЕЕ
    =========================================================================== */
 function renderAch() {
-  app.innerHTML = `${topbar("Ачивки")}
+  app.innerHTML = `${topbar("Ачивки", "progress")}
     <div class="achlist">
       ${DATA.achievements.map(a => {
         const got = state.achievements[a.id];
@@ -1250,7 +1252,7 @@ function renderAch() {
 }
 
 function renderRef() {
-  app.innerHTML = `${topbar("Справочник")}
+  app.innerHTML = `${topbar("Справочник", "more")}
     <div class="ref">
       <h3>🔤 Радиоалфавит ИКАО</h3>
       <div class="reftable">
@@ -1399,7 +1401,7 @@ function renderAttest() {
   const orgOpts = [`<option value="">— ${t("выберите организацию")} —</option>`]
     .concat(ORGS.map(o => `<option value="${esc(o)}"${att.org === o ? " selected" : ""}>${esc(o)}</option>`))
     .concat([`<option value="__other"${orgCustom ? " selected" : ""}>${t("Другая организация…")}</option>`]).join("");
-  app.innerHTML = `${topbar("Аттестация")}
+  app.innerHTML = `${topbar("Аттестация", "exam")}
     <div class="qcard">
       <div class="open-badge">🎓 ${t("Проктор-экзамен · допуск экзаменатора")}</div>
       <p class="qsub">${t("20 вопросов · лимит 15 мин · проходной 75% · справка о прохождении. Старт — после ввода данных и получения кода допуска у экзаменатора.")}</p>
@@ -1467,6 +1469,7 @@ function startAttest() {
   const list = pool.slice(0, Math.min(ATT.N, pool.length));
   if (!list.length) { toast("Нет вопросов для аттестации"); return; }
   tgBack(false);
+  document.body.classList.remove("has-tabs"); oriClose();        // во время экзамена — без нижней панели и Ори
   att.list = list; att.i = 0; att.correct = 0; att.wrong = []; att.switches = 0; att.finished = false;
   att.startTs = Date.now(); att.timeLeft = ATT.TIME; att.answered = false;
   document.body.classList.add("exam-lock");
@@ -1522,7 +1525,7 @@ function attFinish(timeout) {
   attSaveHist({ d: now.toISOString(), name: att.name, unit: att.unit, org: att.org || "", pct, ok, total, sec: att.elapsed, pass, sw: att.switches });
   attReport(pct, ok, total, pass);
   const vc = pass ? "ok" : "no";
-  app.innerHTML = `${topbar("Аттестация")}
+  app.innerHTML = `${topbar("Аттестация", "exam")}
     <div class="result">
       <div class="bigpct ${vc}">${pct}%</div>
       <div class="verdict ${vc}">${pass ? t("Аттестация пройдена") : t("Аттестация не пройдена")}</div>
@@ -1570,7 +1573,7 @@ function renderAttestLog() {
     const d = new Date(r.d).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
     return `<div class="lbrow"><span class="lbpos">${r.pass ? "✅" : "❌"}</span><span class="lbname">${esc(r.name)}<small class="lborg">${esc((r.org ? r.org + " · " : "") + r.unit)} · ${d}${r.sw > 0 ? " · ⚠" + r.sw : ""}</small></span><span class="lbscore">${r.pct}%</span></div>`;
   }).join("") : `<div class="qsub">${t("Записей пока нет. Пройдите аттестацию — результат сохранится здесь.")}</div>`;
-  app.innerHTML = `${topbar("Журнал аттестаций")}<div class="qcard">${rows}</div>
+  app.innerHTML = `${topbar("Журнал аттестаций", "progress")}<div class="qcard">${rows}</div>
     ${h.length ? `<button class="ghost danger fullrow" onclick="if(confirm('Очистить журнал аттестаций на этом устройстве?')){localStorage.removeItem('${ATT.HIST_KEY}');renderAttestLog();}">${t("Очистить журнал")}</button>` : ""}
     <button class="ghost fullrow" onclick="renderAttest()">${t("‹ Аттестация")}</button>`;
 }
@@ -1598,7 +1601,7 @@ function renderStats() {
   }).join("") : `<p class="qsub">Пока нет данных — пройдите несколько вопросов.</p>`;
   let weak = null;
   cats.forEach(c => { const s = state.catStats[c]; if (s.total >= 3) { const p = s.correct / s.total; if (!weak || p < weak.p) weak = { c, p }; } });
-  app.innerHTML = `${topbar("Статистика")}
+  app.innerHTML = `${topbar("Статистика", "progress")}
     <div class="qcard">
       <div class="bigstat">
         <div><b>${state.totalCorrect}</b><span>верных всего</span></div>
@@ -1668,7 +1671,7 @@ function lbName() {
 }
 function renderLeaderboard() {
   if (!lbReady()) {
-    app.innerHTML = `${topbar(t("Лидерборд"))}
+    app.innerHTML = `${topbar(t("Лидерборд"), "progress")}
       <div class="qcard">
         <div class="qtext">🏆 Общий лидерборд ещё не подключён.</div>
         <div class="why">Нужен бесплатный «бэкенд» — как в вашем «Ремонте»: <b>Google Таблица + Apps Script Web App</b>. Код готов в <b>backend/leaderboard.gs</b>, шаги — в <b>backend/SETUP-leaderboard.md</b>. Создаёте Таблицу → вставляете скрипт → Deploy → присылаете URL, я впишу его в <b>scriptUrl</b>. Никаких секретов в сайте.</div>
@@ -1678,7 +1681,7 @@ function renderLeaderboard() {
     return;
   }
   const mode = lbMode;
-  app.innerHTML = `${topbar(t("Лидерборд"))}<div class="qcard"><div class="qsub">Загрузка…</div></div>`;
+  app.innerHTML = `${topbar(t("Лидерборд"), "progress")}<div class="qcard"><div class="qsub">Загрузка…</div></div>`;
   fetch(LEADERBOARD.scriptUrl + "?action=top").then(r => r.json()).then(rows => {
     rows = (Array.isArray(rows) ? rows : []).map(x => {
       const parts = String(x.username || "—").split(" ▪ ");
@@ -1700,13 +1703,13 @@ function renderLeaderboard() {
         `<div class="lbrow"><span class="lbpos">${i + 1}</span><span class="lbname">${x.name}${x.org ? `<small class="lborg">${x.org}</small>` : ""}</span><span class="lbscore">${x.score} XP</span></div>`).join("")
         || `<div class="qsub">Пока пусто — будьте первым!</div>`;
     }
-    app.innerHTML = `${topbar(t("Лидерборд"))}
+    app.innerHTML = `${topbar(t("Лидерборд"), "progress")}
       ${toggle}
       <div class="qcard"><div class="qsub">Топ-30</div>${list}</div>
       <button class="next" onclick="submitScore()">📤 Отправить мой результат (${state.xp} XP)</button>
       <button class="ghost fullrow" onclick="renderHome()">${t("В меню")}</button>`;
   }).catch(() => {
-    app.innerHTML = `${topbar(t("Лидерборд"))}<div class="qcard"><div class="qtext">Не удалось загрузить лидерборд.</div><button class="next" onclick="renderHome()">${t("В меню")}</button></div>`;
+    app.innerHTML = `${topbar(t("Лидерборд"), "progress")}<div class="qcard"><div class="qtext">Не удалось загрузить лидерборд.</div><button class="next" onclick="renderHome()">${t("В меню")}</button></div>`;
   });
 }
 let lbMode = "players";
@@ -1729,7 +1732,7 @@ function renderCertificate() {
   const pad = n => String(n).padStart(2, "0");
   const dateStr = `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
   app.innerHTML = `
-    ${topbar("Сертификат")}
+    ${topbar("Сертификат", "progress")}
     <div class="cert-wrap">
       <div class="cert-card">
         <div class="cert-glow"></div>
@@ -1789,7 +1792,7 @@ function renderSettings() {
   const noTTS = !("speechSynthesis" in window);
   const voices = enVoices();
   const opts = voices.map(v => `<option value="${v.voiceURI}" ${state.voiceURI === v.voiceURI ? "selected" : ""}>${v.name} (${v.lang})</option>`).join("");
-  app.innerHTML = `${topbar("Настройки")}
+  app.innerHTML = `${topbar("Настройки", "more")}
     <div class="qcard">
       <div class="setrow">
         <div class="setlbl"><b>Звук</b><small>озвучка фраз и ответов</small></div>

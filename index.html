@@ -474,7 +474,8 @@ body.exam-lock .opt,body.exam-lock .qtext{-webkit-touch-callout:none}
 .ticks{list-style:none;padding:0;margin:10px 0 4px}
 .ticks li{padding:5px 0 5px 28px;position:relative;font-size:14px}
 .ticks li::before{content:"✓";position:absolute;left:4px;color:var(--green);font-weight:900}
-.tabspace{height:calc(72px + env(safe-area-inset-bottom))}
+body.has-tabs #app{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+@media print{.tabbar,.ori,.oripop,.orihi{display:none!important}}
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:space-around;gap:4px;
   background:#050d13;border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
 .tab{flex:1;max-width:110px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;border-radius:14px;
@@ -535,6 +536,6 @@ body.guide-open .fbk-btn{display:none!important}
 <script src="./data.js"></script>
 <script src="./license.js"></script>
 <script src="./app.js"></script>
-<script src="feedback.js" data-app="atc-english" data-version="v26" defer></script>
+<script src="feedback.js" data-app="atc-english" data-version="v27" defer></script>
 </body>
 </html>
