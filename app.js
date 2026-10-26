@@ -6,7 +6,7 @@
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
-const APP_VERSION = "1.3.0";
+const APP_VERSION = "1.3.1";
 /* ДИАГНОСТИКА — текст ошибки на экране вместо пустого экрана. Урок обращения Ш-2 Shohin (2026-10-14):
    в Telegram для iPhone чужой скрипт подменил глобальную функцию, все разделы падали, а причину
    с телефона не было видно сутки. Код замкнут в функции и не опирается на глобальные имена
@@ -378,7 +378,8 @@ function tabbar(cur) {
   document.body.classList.add("has-tabs");
   const tabs = [["home", "🏠", "Главная", "renderHome()"], ["sections", "📚", "Разделы", "renderSections()"],
     ["exam", "📝", "Аттестация", "route('exam')"], ["progress", "📈", "Прогресс", "renderProgress()"], ["more", "⋯", "Ещё", "renderMore()"]];
-  return `<div class="tabspace"></div><nav class="tabbar">${tabs.map(([k, ic, n, fn]) =>
+  oriClose();
+  return `${oriButton()}<div class="tabspace"></div><nav class="tabbar">${tabs.map(([k, ic, n, fn]) =>
     `<button class="tab ${cur === k ? "on" : ""}" onclick="${fn}"><span class="tic">${ic}</span><span>${t(n)}</span></button>`).join("")}</nav>`;
 }
 function langChips(back) {
@@ -413,7 +414,7 @@ function promoCards() {
     { tag: "Вызов", fn: "startChallenge()", ic: "⚔️", h: "Бросьте вызов коллеге: 10 вопросов" },
     radio ? { tag: "Экзамен", fn: "route('elpet')", ic: "📋", h: "Пробный экзамен ELPET / TEA" }
       : { tag: "Экзамен", fn: "route('exam')", ic: "📝", h: "Аттестация с экзаменатором" },
-    { tag: "Гид", fn: "openGuide('study')", ic: "📘", h: "Как заниматься — пошагово" }
+    { tag: "Ори", fn: "oriToggle()", ic: ORI_SVG, h: "Ори подскажет, с чего начать" }
   ];
   return cards.map((c, i) => `<button class="promo p${i + 1}" onclick="${c.fn}">
       <span class="pic">${c.ic}</span><span class="ptag">${t(c.tag)}</span><span class="ph">${t(c.h)}</span></button>`).join("");
@@ -438,6 +439,66 @@ function dayCard() {
 }
 /* Окно «Сообщить об ошибке / идея» из feedback.js — открываем его же кнопкой */
 function fbkOpen() { const b = document.querySelector(".fbk-btn"); if (b) b.click(); else toast(t("Форма отзыва ещё загружается")); }
+
+/* ───────── Ори — персонаж-помощник (обращение №19, по образцу BRUce из приложения аэропорта) ─────────
+   Сидит в правом нижнем углу экранов-вкладок; по нажатию — подсказка по прогрессу и кнопки.
+   Чат «вживую» — через бота @Ori_gemini_bot (кнопка с data-tg). Рисунок — встроенный SVG. */
+const ORI_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
+  <line x1="32" y1="11" x2="32" y2="5" stroke="#8fb3c2" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="32" cy="4.5" r="3" fill="#27e0a0"/>
+  <rect x="20" y="44" width="24" height="16" rx="8" fill="#eef4f8"/>
+  <rect x="27" y="50" width="10" height="3.5" rx="1.75" fill="#2f74d0"/>
+  <path d="M12 31a20 20 0 0 1 40 0" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linecap="round"/>
+  <rect x="13" y="11" width="38" height="34" rx="17" fill="#f7fafc"/>
+  <rect x="19" y="20" width="26" height="15" rx="7.5" fill="#0e2632"/>
+  <path d="M24 29q3-4 6 0M34 29q3-4 6 0" fill="none" stroke="#46c2ff" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="21" cy="38" r="2.2" fill="#ffb3b3" opacity=".7"/><circle cx="43" cy="38" r="2.2" fill="#ffb3b3" opacity=".7"/>
+  <rect x="7.5" y="24" width="8" height="14" rx="4" fill="#2f74d0"/>
+  <rect x="48.5" y="24" width="8" height="14" rx="4" fill="#2f74d0"/>
+  <path d="M52 37q0 8-10 8.5" fill="none" stroke="#2f74d0" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="40.5" cy="45.5" r="2.6" fill="#27e0a0"/>
+</svg>`;
+function oriButton() {
+  return `<button class="ori" id="oriBtn" onclick="oriToggle()" aria-label="${t("Ори — помощник")}">${ORI_SVG}</button>`;
+}
+/* Подсказка Ори: что сейчас полезнее всего сделать */
+function oriTip() {
+  const todayC = (state.daily.day === todayStr()) ? state.daily.count : 0, goal = state.daily.goal, mist = mistakeCount();
+  const h = new Date().getHours();
+  const hi = h < 5 ? t("Доброй ночи!") : h < 12 ? t("Доброе утро!") : h < 18 ? t("Добрый день!") : t("Добрый вечер!");
+  if (!todayC) return { msg: hi + " " + t("Я Ори, ваш помощник. Начнём с вопроса дня?"), btn: t("Вопрос дня"), fn: "oriClose();startDayQuestion()" };
+  if (mist) return { msg: t("На повторение") + ": " + mist + ". " + t("Разберём ошибки — так запоминается лучше всего."), btn: t("Работа над ошибками"), fn: "oriClose();route('mistakes')" };
+  if (todayC < goal) return { msg: t("Сегодня") + " " + todayC + " " + t("из") + " " + goal + ". " + t("Ещё немного — и цель дня выполнена!"), btn: t("Экзамен на время"), fn: "oriClose();route('blitz')" };
+  return { msg: t("Цель дня выполнена! Бросьте вызов коллеге?"), btn: t("Бросить вызов"), fn: "oriClose();startChallenge()" };
+}
+function oriClose() { const p = document.getElementById("oriPop"); if (p) p.remove(); }
+function oriToggle() {
+  if (document.getElementById("oriPop")) return oriClose();
+  track("open/ori");
+  const tip = oriTip();
+  const p = document.createElement("div"); p.id = "oriPop"; p.className = "oripop";
+  p.innerHTML = `<button class="orix" onclick="oriClose()" aria-label="${t("Закрыть")}">✕</button>
+    <div class="orihead">${ORI_SVG}<b>${t("Ори")}</b><small>${t("ваш помощник")}</small></div>
+    <p>${tip.msg}</p>
+    <button class="oriact" onclick="${tip.fn}">${tip.btn} →</button>
+    <div class="orirow">
+      <a class="orisec" href="${CONTACT_TG}" data-tg target="_blank" rel="noopener">💬 ${t("Чат с Ори")}</a>
+      <button class="orisec" onclick="oriClose();openGuide('study')">📘 ${t("Как заниматься")}</button>
+    </div>`;
+  document.body.appendChild(p);
+}
+/* Первое появление за день — короткое «Привет!» над Ори */
+function oriHello() {
+  let day = ""; try { day = localStorage.getItem("aveng_ori_hi") || ""; } catch (e) {}
+  if (day === todayStr()) return;
+  try { localStorage.setItem("aveng_ori_hi", todayStr()); } catch (e) {}
+  setTimeout(() => {
+    const b = document.getElementById("oriBtn"); if (!b || document.getElementById("oriPop")) return;
+    const s = document.createElement("div"); s.className = "orihi"; s.textContent = t("Привет! Я Ори 👋");
+    s.onclick = () => { s.remove(); oriToggle(); };
+    document.body.appendChild(s); setTimeout(() => s.remove(), 4500);
+  }, 900);
+}
 
 function renderHome() {
   if (typeof attCleanup === "function") attCleanup();
@@ -478,6 +539,7 @@ function renderHome() {
     <p class="disclaimer verline">${t("Версия")} ${APP_VERSION} · ${t("вопросов")}: ${DATA.quiz.length}</p>
     ${tabbar("home")}
   `;
+  oriHello();
 }
 /* Поиск на главном: разделы роли по названию + тренировка по вопросам со словом */
 let searchHits = [];
@@ -547,7 +609,7 @@ function renderMore() {
     <div class="lhead">${t("Помощь")}</div>
     <div class="lgroup">
       ${lrow("📘", t("Как заниматься — проводник"), t("Пошаговая инструкция"), "openGuide('study')")}
-      <a class="lrow" href="${CONTACT_TG}" data-tg target="_blank" rel="noopener"><span class="lic">✈️</span><span class="ltx"><b>${t("Связаться / поддержка")}</b><small>${t("Ответим в Telegram")}</small></span><span class="lchev">›</span></a>
+      <a class="lrow" href="${CONTACT_TG}" data-tg target="_blank" rel="noopener"><span class="lic oric">${ORI_SVG}</span><span class="ltx"><b>${t("Чат с Ори")}</b><small>${t("Вопросы и поддержка в Telegram")}</small></span><span class="lchev">›</span></a>
       ${lrow("🐞", t("Сообщить об ошибке"), t("Или предложить идею"), "fbkOpen()")}
     </div>
     <div class="lhead">${t("Настройки")}</div>
@@ -672,6 +734,7 @@ function route(go) {
 function topbar(title) {
   tgBack(true);
   document.body.classList.remove("has-tabs");
+  oriClose();
   return `<div class="topbar">
     <button class="back" onclick="renderHome()">${t("‹ Меню")}</button>
     <span class="ttitle">${title}</span>
