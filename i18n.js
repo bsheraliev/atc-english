@@ -419,3 +419,7 @@ Object.assign(I18N.en, {
   "Ори подскажет, с чего начать": "Ori will show you where to start",
   "Вопросы и поддержка в Telegram": "Questions and support on Telegram"
 });
+
+/* Ори: отзыв из подсказки (обращение №19) */
+Object.assign(I18N.tg, { "Сообщить об ошибке или пожелание": "Дар бораи хато ё хоҳиш хабар диҳед" });
+Object.assign(I18N.en, { "Сообщить об ошибке или пожелание": "Report a problem or suggest an idea" });

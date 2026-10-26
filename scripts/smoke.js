@@ -106,7 +106,9 @@ window.AVENG_SMOKE = async function () {
   /* --- Ори: на вкладках есть, по нажатию подсказка с действием и чатом (обращение №19) --- */
   await step('Ори на главном', async () => { renderHome(); }, { has: () => !!view().querySelector('#oriBtn') });
   await step('Ори: подсказка открывается', async () => { oriToggle(); },
-    { has: () => { const p = document.querySelector('#oriPop'); return !!(p && p.querySelector('.oriact') && p.querySelector('a[data-tg]')); } });
+    { has: () => { const p = document.querySelector('#oriPop'); return !!(p && p.querySelector('.oriact') && p.querySelector('a[data-tg]') && p.querySelector('.orisec.wide')); } });
+  await step('Ори: на вкладках отдельной кнопки обращений нет', async () => {},
+    { has: () => { const b = document.querySelector('.fbk-btn'); return !b || getComputedStyle(b).display === 'none'; } });
   await step('Ори: действие подсказки срабатывает', async () => { document.querySelector('#oriPop .oriact').click(); },
     { has: () => !document.querySelector('#oriPop') });
   await step('Ори на вкладке «Ещё», не на внутренних экранах', async () => { renderMore(); },
