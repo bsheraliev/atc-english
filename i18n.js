@@ -261,3 +261,15 @@ const t = function (s) {
 /* Поле «Телефон или Telegram» на экране аттестации */
 Object.assign(I18N.tg, { "Телефон или Telegram (+992… или @ник)": "Телефон ё Telegram (+992… ё @ном)" });
 Object.assign(I18N.en, { "Телефон или Telegram (+992… или @ник)": "Phone or Telegram (+992… or @username)" });
+
+/* Окно «Напишите нам в Telegram» — если приложение Telegram не открылось (t.me недоступен) */
+Object.assign(I18N.tg, {
+  "Напишите нам в Telegram": "Ба мо дар Telegram нависед",
+  "Не удалось открыть Telegram автоматически. Откройте Telegram, нажмите поиск и введите:": "Telegram худкор кушода нашуд. Telegram-ро кушоед, ҷустуҷӯро пахш кунед ва ворид кунед:",
+  "Скопировать": "Нусха бардоштан", "Скопировано ✓": "Нусха бардошта шуд ✓", "Открыть через t.me": "Тавассути t.me кушодан"
+});
+Object.assign(I18N.en, {
+  "Напишите нам в Telegram": "Message us on Telegram",
+  "Не удалось открыть Telegram автоматически. Откройте Telegram, нажмите поиск и введите:": "Telegram did not open automatically. Open Telegram, tap Search and enter:",
+  "Скопировать": "Copy", "Скопировано ✓": "Copied ✓", "Открыть через t.me": "Open via t.me"
+});
