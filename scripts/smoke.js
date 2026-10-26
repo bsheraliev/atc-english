@@ -103,6 +103,15 @@ window.AVENG_SMOKE = async function () {
     { has: () => !!view().querySelector('.qtext') });
   await step('главный: внутренний экран без нижней панели', async () => { renderHome(); renderAch(); },
     { has: () => !view().querySelector('.tabbar') && !document.body.classList.contains('has-tabs') });
+  /* --- Ори: на вкладках есть, по нажатию подсказка с действием и чатом (обращение №19) --- */
+  await step('Ори на главном', async () => { renderHome(); }, { has: () => !!view().querySelector('#oriBtn') });
+  await step('Ори: подсказка открывается', async () => { oriToggle(); },
+    { has: () => { const p = document.querySelector('#oriPop'); return !!(p && p.querySelector('.oriact') && p.querySelector('a[data-tg]')); } });
+  await step('Ори: действие подсказки срабатывает', async () => { document.querySelector('#oriPop .oriact').click(); },
+    { has: () => !document.querySelector('#oriPop') });
+  await step('Ори на вкладке «Ещё», не на внутренних экранах', async () => { renderMore(); },
+    { has: () => !!view().querySelector('#oriBtn') });
+  document.querySelectorAll('.orihi').forEach(n => n.remove());
   renderHome();
 
   /* --- экраны из нижней части главного --- */
