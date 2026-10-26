@@ -101,8 +101,15 @@ window.AVENG_SMOKE = async function () {
     { has: () => view().querySelectorAll('#searchRes .sres').length > 0 });
   await step('главный: вопрос дня открывается', async () => { renderHome(); startDayQuestion(); },
     { has: () => !!view().querySelector('.qtext') });
-  await step('главный: внутренний экран без нижней панели', async () => { renderHome(); renderAch(); },
+  await step('тренажёр (квиз) — без нижней панели', async () => { renderHome(); route('quiz-phraseology'); },
     { has: () => !view().querySelector('.tabbar') && !document.body.classList.contains('has-tabs') });
+  for (const [name, fn, tab] of [['аттестация', () => renderAttest(), 'Аттестация'], ['ачивки', () => renderAch(), 'Прогресс'],
+      ['статистика', () => renderStats(), 'Прогресс'], ['журнал аттестаций', () => renderAttestLog(), 'Прогресс'],
+      ['сертификат', () => renderCertificate(), 'Прогресс'], ['настройки', () => renderSettings(), 'Ещё'],
+      ['справочник', () => renderRef(), 'Ещё'], ['полный доступ', () => renderUnlock(), 'Ещё']]) {
+    await step(name + ' — с нижней панелью (вкладка «' + tab + '»)', async () => { renderHome(); fn(); },
+      { has: () => { const on = view().querySelector('.tabbar .tab.on'); return !!on && on.textContent.indexOf(tab) >= 0 && document.body.classList.contains('has-tabs'); } });
+  }
   /* --- Ори: на вкладках есть, по нажатию подсказка с действием и чатом (обращение №19) --- */
   await step('Ори на главном', async () => { renderHome(); }, { has: () => !!view().querySelector('#oriBtn') });
   await step('Ори: подсказка открывается', async () => { oriToggle(); },
