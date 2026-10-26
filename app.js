@@ -6,7 +6,77 @@
 /* ---------- Состояние и сохранение ---------- */
 const SAVE_KEY = "atc_eng_game_v1";
 /* Версия приложения. Обновлять вместе с версией кэша в sw.js. */
-const APP_VERSION = "1.2.4";
+const APP_VERSION = "1.2.5";
+/* ДИАГНОСТИКА — текст ошибки на экране вместо пустого экрана. Урок обращения Ш-2 Shohin (2026-10-14):
+   в Telegram для iPhone чужой скрипт подменил глобальную функцию, все разделы падали, а причину
+   с телефона не было видно сутки. Код замкнут в функции и не опирается на глобальные имена
+   приложения — подмена их диагностику не ломает. Наружу — одно имя __avengDiag. */
+(() => {
+  const log = [];
+  let own = [], box = null;
+  const L = {
+    ru: { h: "Что-то пошло не так", p: "Сделайте снимок экрана или скопируйте текст и отправьте через «Сообщить об ошибке».", copy: "Скопировать", copied: "Скопировано ✓", reload: "Перезапустить", close: "Закрыть" },
+    tg: { h: "Чизе нодуруст шуд", p: "Аз экран акс гиред ё матнро нусха бардоред ва тавассути «Дар бораи хато хабар додан» фиристед.", copy: "Нусха бардоштан", copied: "Нусха бардошта шуд ✓", reload: "Аз нав оғоз", close: "Пӯшидан" },
+    en: { h: "Something went wrong", p: "Take a screenshot or copy the text and send it via “Report a problem”.", copy: "Copy", copied: "Copied ✓", reload: "Restart", close: "Close" }
+  };
+  const lang = () => { try { return L[state.lang] ? state.lang : "ru"; } catch (e) { return "ru"; } };
+  const note = m => { if (log.length < 8 && !log.includes(m)) log.push(m); };
+  const text = err => {
+    const ua = (navigator.userAgent.match(/(iPhone OS|iPad; CPU OS|Android|Windows NT|Mac OS X)[ \d._]*/) || [""])[0].trim();
+    const W = window.Telegram && Telegram.WebApp;
+    const scr = document.querySelector(".ttitle");
+    const lines = [`AvEng ${APP_VERSION} · ${scr ? scr.textContent : "меню"} · ${ua || "?"}` +
+      (W && W.platform && W.platform !== "unknown" ? ` · Telegram ${W.platform} ${W.version}` : "")];
+    if (err) {
+      const first = `${err.name || "Error"}: ${err.message}`;   // Chrome повторяет её первой строкой стека
+      lines.push(first, ...String(err.stack || "").split("\n").map(s => s.trim()).filter(s => s && s !== first).slice(0, 4));
+    }
+    if (log.length) lines.push("журнал: " + log.join("; "));
+    const lost = own.filter(k => typeof window[k] !== "function");
+    if (lost.length) lines.push("перезаписаны чужим скриптом: " + lost.slice(0, 12).join(", "));
+    return lines.join("\n");
+  };
+  const copyOld = (s, ok) => {
+    const ta = document.createElement("textarea");
+    ta.value = s; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;top:0;opacity:0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, s.length);
+    try { if (document.execCommand("copy")) ok(); } catch (e) {}
+    ta.remove();
+  };
+  const show = err => {
+    if (box) { box.querySelector("pre").textContent = text(err); return; }
+    const d = L[lang()];
+    box = document.createElement("div");
+    box.className = "diagp"; box.setAttribute("role", "alert");
+    box.innerHTML = `<b>⚠️ ${d.h}</b><p>${d.p}</p><pre></pre><div class="diagp-row"><button type="button">${d.copy}</button><button type="button">${d.reload}</button><button type="button">${d.close}</button></div>`;
+    box.querySelector("pre").textContent = text(err);
+    const [bCopy, bReload, bClose] = box.querySelectorAll("button");
+    bCopy.onclick = () => {
+      const s = box.querySelector("pre").textContent, ok = () => { bCopy.textContent = d.copied; };
+      try { navigator.clipboard.writeText(s).then(ok, () => copyOld(s, ok)); } catch (e) { copyOld(s, ok); }
+    };
+    bReload.onclick = () => location.reload();
+    bClose.onclick = () => { box.remove(); box = null; };
+    document.body.appendChild(box);
+  };
+  addEventListener("error", e => {
+    if (!e.message || e.message === "Script error.") return;            // чужой домен — деталей нет
+    note(e.message + (e.lineno ? ` @${String(e.filename || "").split("/").pop() || "страница"}:${e.lineno}` : ""));
+    // панель — только для ошибок нашего кода (файлы и onclick со своего адреса); чужие лишь в журнал
+    if (e.filename && e.filename.indexOf(location.origin) === 0) show(e.error || { name: "Error", message: e.message });
+  });
+  addEventListener("unhandledrejection", e => note("promise: " + ((e.reason && e.reason.message) || e.reason)));
+  // страховка от «пустого экрана»: меню не появилось за 4 с после загрузки — показываем, что известно
+  addEventListener("load", () => setTimeout(() => {
+    const a = document.getElementById("app");
+    if (a && !a.children.length) show({ name: "Пустой экран", message: "меню не отрисовалось за 4 с после загрузки" });
+  }, 4000));
+  window.__avengDiag = {
+    // снимок своих глобальных функций после запуска — потом видно, какую из них подменили
+    snap() { own = Object.keys(window).filter(k => { try { return typeof window[k] === "function"; } catch (e) { return false; } }); },
+    show, text
+  };
+})();
 const CONTACT_TG = "https://t.me/Ori_gemini_bot";   // контакт/поддержка в Telegram
 /* Основные организации/компании ГА РТ для выбора при запросе аттестации.
    «Другая организация…» открывает поле свободного ввода. Список легко расширять. */
@@ -1919,9 +1989,13 @@ function startApp() {
     detectChallenge();
     lbRegister();
     try {
+      /* ответ облака Telegram может не прийти — тогда через 2 с открываем меню без него, иначе экран пустой */
+      let homeShown = false;
+      const fallback = setTimeout(() => { homeShown = true; home(); }, 2000);
       TG.CloudStorage.getItem(SAVE_KEY, (err, val) => {
+        clearTimeout(fallback);
         if (!err && val) { try { const cloud = JSON.parse(val); if ((cloud.xp || 0) > (state.xp || 0)) Object.assign(state, defaultState(), cloud); } catch (e) {} }
-        home();
+        if (!homeShown) home();
       });
       return;
     } catch (e) {}
@@ -1930,6 +2004,7 @@ function startApp() {
   home();
 }
 startApp();
+if (window.__avengDiag) __avengDiag.snap();
 
 /* ---------- Service worker ---------- */
 if ("serviceWorker" in navigator) {
