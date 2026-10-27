@@ -189,6 +189,86 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-heig
 .sheet h4{margin:0 0 2px;font-size:10px}
 .dim{position:absolute;inset:0;background:rgba(0,0,0,.5)}
 
+/* новый интерфейс 1.3: шапка, роли и поиск, ярлыки, нижняя панель, Ори (обращение №24) */
+.hero{background:linear-gradient(165deg,#2a63ad,#1b4a86 55%,#123563);padding:13px 9px 19px;color:#fff;flex:none}
+.hero .lgs{display:flex;gap:3px;justify-content:flex-end;margin-bottom:3px}
+.hero .lgs span{border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:1px 5px;font-size:6.5px;color:#d6e6f7}
+.hero .lgs span.on{background:#fff;color:#123563}
+.hero .br{font-size:7px;color:#cfe0f3}.hero .br b{color:#fff;font-size:8.5px}
+.hero .h1{font-size:13px;font-weight:800;line-height:1.12;margin-top:2px}
+.hero .hs{font-size:6.5px;color:#cfe0f3;margin-top:2px}
+.sc{margin:-12px 7px 0;background:#050d13;border:1px solid var(--app-line);border-radius:11px;padding:5px;position:relative;
+  display:flex;flex-direction:column;gap:4px;flex:none}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#0b1a24;border:1px solid var(--app-line);border-radius:8px;padding:2px}
+.seg span{font-size:6.8px;text-align:center;padding:4px 2px;border-radius:6px;color:#b9cbd6;white-space:nowrap}
+.seg span.on{background:#2f74d0;color:#fff}
+.srch{background:#0b1a24;border:1px solid var(--app-line);border-radius:99px;padding:4px 8px;font-size:7.5px;color:#7d98a6}
+.srch.fill{color:var(--app-fg)}
+.sres{background:var(--app-panel);border:1px solid var(--app-line);border-radius:7px;padding:4px 6px;font-size:7.5px}
+.qk{display:flex;gap:5px;padding:7px 7px 0;overflow:hidden;flex:none}
+.qk div{flex:0 0 37px;text-align:center;font-size:5.8px;font-weight:600;line-height:1.2}
+.qk i{display:grid;place-items:center;width:31px;height:31px;margin:0 auto 2px;border-radius:50%;background:#050d13;
+  border:1px solid var(--app-line);font-style:normal;font-size:14px;position:relative}
+.qk i.more{color:#5aa2f0;font-weight:700}
+.qk .hl::after{right:50%;margin-right:-12px}
+.ab.wt{padding-bottom:36px}
+.tb{position:absolute;left:0;right:0;bottom:0;display:flex;gap:2px;background:#050d13;border-top:1px solid var(--app-line);
+  padding:3px 3px 6px;z-index:3}
+.tb span{flex:1;text-align:center;font-size:5.8px;color:#c9d6de;border-radius:6px;padding:2px 0;position:relative;white-space:nowrap}
+.tb span i{display:block;font-style:normal;font-size:10px;line-height:1.25}
+.tb span.on{background:#122230;color:#5aa2f0}
+.tb .hl{border:0!important}
+.tb .hl::after{right:50%;margin-right:-12px}
+.ori{position:absolute;right:3px;bottom:34px;width:40px;z-index:3;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+.scr .ori.hl{position:absolute;border:0!important;box-shadow:none}
+.ori.hl::after{right:50%;margin-right:-12px}
+.opop{position:absolute;left:7px;right:7px;bottom:78px;z-index:4;background:var(--app-panel2);border:1px solid var(--app-line);
+  border-radius:10px;padding:7px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.opop .oh{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700}
+.opop .oh img{width:20px;height:20px;border-radius:50%;background:#a9c6de}
+.opop .oh small{font-size:6.5px;color:var(--app-muted);font-weight:400}
+.opop p{margin:0;font-size:7.5px;line-height:1.4}
+.opop .oa{background:#2f74d0;color:#fff;border-radius:7px;text-align:center;font-weight:700;font-size:8px;padding:5px}
+.opop .os{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.opop .os span{background:var(--app-panel);border:1px solid var(--app-line);border-radius:6px;text-align:center;font-size:6.5px;padding:4px 2px;font-weight:600}
+.opop .os span.w{grid-column:1 / -1}
+.pgh{font-size:13px;font-weight:900;line-height:1.1}
+.pgs{font-size:7px;color:var(--app-muted)}
+.fch{display:flex;gap:3px;overflow:hidden;flex:none}
+.fch span{flex:none;background:#1c2d38;border-radius:99px;padding:3px 7px;font-size:6.8px;font-weight:700;color:#c9d6de}
+.fch span.on{background:#2f74d0;color:#fff}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.cd{position:relative;min-height:56px;border-radius:9px;padding:6px;display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(170deg,#285a96,#0e2440)}
+.cd.v{background:linear-gradient(170deg,#1d6656,#0b2a23)}.cd.a{background:linear-gradient(170deg,#6a3a8a,#24112f)}
+.cd.c{background:linear-gradient(170deg,#7a4a1c,#2c1a08)}.cd.r{background:linear-gradient(170deg,#7a2846,#3a1023)}
+.cd i{position:absolute;right:5px;top:4px;font-style:normal;font-size:15px}
+.cd b{font-size:8px;font-weight:800;color:#fff;line-height:1.2}
+.cd small{font-size:6px;color:#c8d6de}
+.cd .pt{align-self:flex-start;background:rgba(255,255,255,.18);border-radius:4px;padding:1px 4px;font-size:5.8px;font-weight:700;margin-bottom:2px;color:#fff}
+.cd.lock{outline:1px dashed var(--app-amber);outline-offset:-1px}
+.cd .lk{position:absolute;left:4px;top:4px;font-size:5.5px;font-weight:700;color:var(--app-amber);border:1px solid var(--app-amber);border-radius:4px;padding:0 3px}
+.cd img{position:absolute;right:2px;top:2px;width:30px}
+.dq{background:#2b4566;border-radius:9px;padding:6px;color:#fff;display:flex;flex-direction:column;gap:3px}
+.dq .dh{display:flex;justify-content:space-between;font-size:6.5px;color:#cbd9ea}
+.dq .dt{font-size:8px;font-weight:600}
+.dq .dg{align-self:flex-end;background:#fff;color:#1b3a5e;border-radius:99px;padding:2px 7px;font-size:7px;font-weight:800}
+.lh{font-size:8px;color:#d9e6ec;margin-top:2px}
+.lg{background:#050d13;border:1px solid var(--app-line);border-radius:9px;overflow:hidden;flex:none}
+.lr{display:flex;align-items:center;gap:6px;padding:5px 7px;border-bottom:1px solid var(--app-line);font-size:8px;position:relative}
+.lr:last-child{border-bottom:0}
+.lr>i{font-style:normal;font-size:11px;width:13px;text-align:center}
+.lr>span{flex:1;min-width:0}.lr small{display:block;font-size:6.3px;color:var(--app-muted)}
+.lr .cv{flex:none;color:var(--app-muted);font-size:10px}
+.lr.hl::after{right:14px}
+.lr .lgs{display:flex;gap:2px}.lr .lgs span{border:1px solid var(--app-line);border-radius:99px;padding:1px 4px;font-size:6px;color:var(--app-muted)}
+.lr .lgs span.on{border-color:var(--app-blue);color:var(--app-blue)}
+.acc{background:#050d13;border:1px solid var(--app-line);border-radius:9px;padding:6px 7px;display:flex;flex-direction:column;gap:3px;font-size:7.5px}
+.acc small{font-size:6.5px;color:var(--app-muted)}
+.mb.blue{background:#2f74d0;color:#fff}
+.ori img{width:100%;display:block}
+.pr .cd{min-height:50px}
+
 /* на телефоне макет меньше, чтобы текст шага попадал в первый экран */
 @media (max-width:620px){
   .phone{width:188px}
@@ -270,45 +350,51 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-heig
 (()=>{
 "use strict";
 const $=s=>document.querySelector(s);
-const VER='v1.2.2';
+const VER='v1.3.5';
 
-/* --- кусочки мини-экрана приложения --- */
+/* --- кусочки мини-экрана приложения (интерфейс 1.3: шапка, вкладки, Ори — обращение №24) --- */
+const ORI='data:image/webp;base64,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', ORIF='data:image/webp;base64,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';
 function hdr(title,o){o=o||{};return `<div class="ah">${o.back?'<span class="hb">‹ Меню</span>':''}<b>${title}</b><span class="xp">${o.xp||'0 XP'}</span>${o.clock?`<span class="clock">${o.clock}</span>`:''}</div>`;}
-function abBody(inner){return `<div class="ab">${inner}</div>`;}
-function langs(hl){return `<div class="chips ${hl?'hl mid':''}">${[['Рус',1],['Тоҷикӣ',0],['Eng',0]].map(l=>`<span class="chip ${l[1]?'on':''}">${l[0]}</span>`).join('')}</div>`;}
-function brand(){return `<div class="brandline">✈ <b>AvEng</b> · авиационный английский</div>`;}
-function roles(on,hl){const R=['Диспетчер','Пилот','Бортпроводник','Аэропорт'];
-  return `<div class="chips ${hl?'hl mid':''}" style="flex-wrap:wrap">${R.map(r=>`<span class="chip ${r===on?'on':''}">${r}</span>`).join('')}</div>`;}
+function abBody(inner,o){o=o||{};return `<div class="ab ${o.tabs?'wt':''}">${inner}</div>`;}
+function hero(o){o=o||{};return `<div class="hero"><div class="lgs ${o.hlLang?'hl mid':''}">${[['Рус',1],['Тоҷикӣ',0],['Eng',0]].map(l=>`<span class="${l[1]?'on':''}">${l[0]}</span>`).join('')}</div>
+  <div class="br">✈ <b>AvEng</b> · авиационный английский</div><div class="h1">Добро пожаловать в AvEng!</div><div class="hs">Радиообмен и авиационный английский по ИКАО</div></div>`;}
+function sc(o){o=o||{};const R=[['🗼','Диспетчер'],['👨‍✈️','Пилот'],['🧳','Бортпроводник'],['🛃','Аэропорт']];
+  return `<div class="sc"><div class="seg ${o.hlRole?'hl mid':''}">${R.map(r=>`<span class="${r[1]===(o.role||'Диспетчер')?'on':''}">${r[0]} ${r[1]}</span>`).join('')}</div>
+  <div class="srch ${o.q?'fill':''} ${o.hlSearch?'hl':''}">🔍 ${o.q||'Раздел, тема или слово…'}</div>${o.res||''}</div>`;}
+function quick(hl){const Q=[['🔤','Радио­алфавит'],['🗼','Фразео­логия'],['📻','Станд. слова'],['🔁','Read-back']];
+  return `<div class="qk">${Q.map((q,k)=>`<div><i class="${hl===k?'hl':''}">${q[0]}</i>${q[1]}</div>`).join('')}<div><i class="more ${hl==='more'?'hl':''}">→</i>Все разделы</div></div>`;}
+function tabs(on,hl){const T=[['home','🏠','Главная'],['sec','📚','Разделы'],['exam','📝','Аттестация'],['prog','📈','Прогресс'],['more','⋯','Ещё']];
+  return `<div class="tb">${T.map(x=>`<span class="${x[0]===on?'on':''} ${x[0]===hl?'hl':''}"><i>${x[1]}</i>${x[2]}</span>`).join('')}</div>`;}
+function ori(hl){return `<span class="ori ${hl?'hl':''}"><img src="${ORI}" alt=""></span>`;}
+function opop(msg,btn,hl){return `<div class="opop"><div class="oh"><img src="${ORIF}" alt="">Ори <small>ваш помощник</small></div><p>${msg}</p>
+  <div class="oa ${hl==='act'?'hl mid':''}">${btn} →</div><div class="os"><span>💬 Чат с Ори</span><span>📘 Как заниматься</span><span class="w ${hl==='fb'?'hl mid':''}">✍️ Сообщить об ошибке или пожелание</span></div></div>`;}
 function rank(name,sub,pct,xp){return `<div class="rank"><span class="ri">🎖</span><div class="rg"><b>${name}</b><small>Шкала ИКАО: ${sub}</small><div class="bar"><i style="width:${pct}%"></i></div><small style="margin-top:2px">${xp}</small></div></div>`;}
 function daily(n){return `<div class="daily"><span>🎯 Сегодня <b>${n}/20</b></span><span class="db"><i></i></span><span>🔥 <b>3</b> дн.</span></div>`;}
 function licbar(hl){return `<div class="licbar"><span class="lt">🔒 Демо-версия · 66 вопр. из 227 + радиоалфавит. Полный курс — по коду организации.</span><span class="lb ${hl?'hl mid':''}">Ввести код</span></div>`;}
-function tile(icon,name,sub,o){o=o||{};
-  return `<div class="tl ${o.lock?'lock':''} ${o.hl?'hl mid':''}">${o.lock?'<span class="lk">🔒 по лицензии</span>':''}<i>${icon}</i><b>${name}</b><small>${sub}</small></div>`;}
+function card(cls,ic,name,sub,o){o=o||{};return `<div class="cd ${cls} ${o.lock?'lock':''} ${o.hl?'hl mid':''}">${o.lock?'<span class="lk">🔒 по лицензии</span>':''}<i>${ic}</i><b>${name}</b>${sub?`<small>${sub}</small>`:''}</div>`;}
+function promo(tag,cls,ic,name){return `<div class="cd ${cls}">${ic}<span class="pt">${tag}</span><b>${name}</b></div>`;}
+function lr(ic,t,s,o){o=o||{};return `<div class="lr ${o.hl?'hl':''}"><i>${ic}</i><span>${t}${s?`<small>${s}</small>`:''}</span>${o.right||'<span class="cv">›</span>'}</div>`;}
 function hud(n,total,hearts){return `<div class="hud"><span>Вопрос ${n}/${total}</span><span class="sp"></span><span>${'❤️'.repeat(hearts)}${'🖤'.repeat(3-hearts)}</span><span>🔥 ${n-1}</span></div>`;}
+function home(o){o=o||{};return `${hero(o)}${sc(o)}${quick(o.quick)}${abBody(o.body||rank('Стажёр','Level 1–2',8,'0 XP · до «Диспетчер-практикант» 120 XP')+daily(o.daily||0),{tabs:1})}${tabs('home',o.hlTab)}${ori(o.hlOri)}`;}
 
 const TRACKS={
 study:[
- {eye:'Шаг 1',t:'Откройте приложение',d:'Ссылка одна и та же для телефона и компьютера. Регистрация не нужна — тренажёр открывается сразу.',
+ {eye:'Шаг 1',t:'Откройте приложение',d:'Ссылка одна и та же для телефона и компьютера. Регистрация не нужна — тренажёр открывается сразу на главном экране.',
   note:['📶','Первый раз — с интернетом. Дальше AvEng работает без связи: уроки лежат в телефоне.'],
-  scr:`<div class="brow"><span class="url">bsheraliev.github.io/atc-english</span><span>⋮</span></div>
-   ${abBody(`${langs()}${brand()}${rank('Стажёр','Level 1–2',8,'0 XP · до «Диспетчер-практикант» 120 XP')}${daily(0)}
-   <div class="tiles">${tile('🔤','Радиоалфавит','Алфавит ИКАО + числа')}${tile('🗼','Фразеология','Doc 4444 гл.12')}</div>`)}`},
+  scr:`<div class="brow"><span class="url">bsheraliev.github.io/atc-english</span><span>⋮</span></div>${home()}`},
 
  {eye:'Шаг 2',t:'Поставьте на главный экран',d:'В меню браузера выберите «Добавить на главный экран» — появится значок, как у обычного приложения, и откроется без адресной строки.',
   note:['📲','iPhone: «Поделиться» → «На экран Домой». Android: меню ⋮ → «Установить приложение».'],
-  scr:`<div class="brow"><span class="url">bsheraliev.github.io/atc-english</span><span>⋮</span></div>
-   ${abBody(`${brand()}${rank('Стажёр','Level 1–2',8,'0 XP')}`)}
+  scr:`<div class="brow"><span class="url">bsheraliev.github.io/atc-english</span><span>⋮</span></div>${home()}
    <div class="menu"><div>Новая вкладка</div><div>Закладки</div><div class="hl" style="border:1px solid transparent">Добавить на гл. экран</div><div>Настройки</div></div>`},
 
- {eye:'Шаг 3',t:'Выберите язык и роль',d:'Язык интерфейса — русский, таджикский или английский. Роль решает, какие темы вам показывать: у диспетчера координация, у бортпроводника — объявления в салоне.',
+ {eye:'Шаг 3',t:'Выберите язык и роль',d:'Язык — переключатель в синей шапке: русский, таджикский или английский. Роль — четыре кнопки под приветствием: она решает, какие темы вам показывать (у диспетчера — координация, у бортпроводника — объявления в салоне).',
   note:['🔁','Роль и язык меняются в любой момент — прогресс при этом не сбрасывается.'],
-  scr:abBody(`${langs(1)}${brand()}${roles('Диспетчер',1)}${rank('Стажёр','Level 1–2',8,'0 XP')}
-   <div class="tiles">${tile('🔤','Радиоалфавит','Алфавит ИКАО + числа')}${tile('🗼','Фразеология','Doc 4444 гл.12')}</div>`)},
+  scr:home({hlLang:1,hlRole:1})},
 
- {eye:'Шаг 4',t:'Начните с радиоалфавита',d:'Первая плитка — фундамент: 26 букв ИКАО и произношение цифр. Она открыта всем и не требует кода организации.',
+ {eye:'Шаг 4',t:'Начните с радиоалфавита',d:'Круглые ярлыки под поиском — первые разделы вашей роли. Начните с «Радиоалфавита»: 26 букв ИКАО и цифры. Он открыт всем и не требует кода организации.',
   note:['🔊','Буквы озвучены заранее, поэтому звук работает и в Telegram, и без интернета.'],
-  scr:abBody(`${brand()}${roles('Диспетчер')}${daily(4)}
-   <div class="tiles">${tile('🔤','Радиоалфавит','Алфавит ИКАО + числа · Doc 9432',{hl:1})}${tile('🗼','Фразеология','Стандартные команды')}${tile('📻','Стандартные слова','AFFIRM, WILCO, ROGER…')}${tile('🔁','Read-back','Обратный повтор',{lock:1})}</div>`)},
+  scr:home({quick:0,daily:4})},
 
  {eye:'Шаг 5',t:'Слушайте и отвечайте',d:'Показана буква — нажмите «Прослушать» и выберите, как она звучит в эфире. Так же устроены цифры: «три» в радиообмене — TREE, «девять» — NINER.',
   scr:hdr('Радиоалфавит',{back:1,xp:'40 XP'})+abBody(`<div class="hud"><span>7/12</span><span class="sp"></span><span>✅ 6</span></div>
@@ -324,10 +410,11 @@ study:[
    <div class="why">ROGER — «принял», без обязательства выполнить. WILCO = will comply: принял <b>и</b> выполню.</div>
    <div class="src">ICAO Doc 9432, гл. 2</div></div>`)},
 
- {eye:'Шаг 7',t:'Что открыто, а что по лицензии',d:'Без кода доступны радиоалфавит, фразеология, стандартные слова и числа — 66 вопросов из 227. Остальные темы и режимы помечены замком.',
-  note:['🏢','Код выдаётся организации: аэропорту, авиакомпании, учебному центру. Кнопка «Ввести код» — в жёлтой полосе наверху.'],
-  scr:abBody(`${licbar(1)}
-   <div class="tiles">${tile('🌦️','Метео-фразеология','QNH, RVR, CAVOK',{lock:1})}${tile('🚨','Аварийные','MAYDAY, 7700/7600',{lock:1})}${tile('👂','На слух','Диктор → read-back',{lock:1})}${tile('🎧','Радиообмен','Собрать диалог',{lock:1})}</div>`)},
+ {eye:'Шаг 7',t:'Все темы — во вкладке «Разделы»',d:'Внизу экрана — панель вкладок. В «Разделах» все темы вашей роли крупными карточками, а фильтры сверху делят их на радиообмен, лексику, слух и речь и проверку. Без кода открыты радиоалфавит, фразеология, стандартные слова и числа — 66 вопросов из 227; остальное помечено замком.',
+  note:['🏢','Код выдаётся организации: аэропорту, авиакомпании, учебному центру. Ввести его — кнопкой «Ввести код» или во вкладке «Ещё».'],
+  scr:abBody(`<div class="pgh">Разделы</div><div class="pgs">🗼 Диспетчер · сменить роль</div>
+   <div class="fch"><span>Все</span><span class="on">Радиообмен</span><span>Лексика</span><span>Слух и речь</span></div>
+   <div class="cards">${card('','🗼','Фразеология','Doc 4444 гл.12')}${card('','📻','Стандартные слова','AFFIRM, WILCO…')}${card('','🔁','Read-back','Обратный повтор',{lock:1})}${card('','🔢','Числа и частоты','Doc 9432')}${card('','🚨','Аварийные','MAYDAY, 7700',{lock:1})}${card('','🎧','Радиообмен','Собрать диалог',{lock:1})}</div>`,{tabs:1})+tabs('sec','sec')+ori()},
 
  {eye:'Шаг 8',t:'Отвечайте словами, а не кнопками',d:'В части вопросов нужно написать фразу по-английски. Ответ оценивает ИИ: ставит балл, говорит, чего не хватило, и показывает эталонную фразу.',
   note:['✍️','Таких вопросов 12. В экзамен на время и в аттестацию они не попадают — там только выбор из вариантов.'],
@@ -337,46 +424,49 @@ study:[
    <div class="inp ta ph">Введите ответ (по-английски)…</div>
    <div class="mb hl mid">Проверить ответ</div></div>`)},
 
- {eye:'Шаг 9',t:'Возвращайтесь к ошибкам',d:'Каждый неверный ответ копится в «Работе над ошибками». Ответили верно — вопрос оттуда уходит. Цель на день — 20 вопросов, серия дней держит темп.',
-  scr:abBody(`${daily(14)}
-   <div class="tiles">${tile('🧯','Работа над ошибками','7 на повторение',{hl:1})}${tile('⏱️','Экзамен на время','15 вопросов · 20 с')}</div>
-   <div class="row2"><div class="gh">🏅 Ачивки (4/9)</div><div class="gh">📊 Статистика</div></div>
-   <div class="qc"><div class="qs">Слабые темы</div>
-   <div class="opt no">Числа и частоты — 54 %</div><div class="opt">Read-back — 71 %</div></div>`)},
+ {eye:'Шаг 9',t:'Ищите и тренируйтесь по слову',d:'Поиск на главном экране находит раздел по названию и собирает тренировку из вопросов, где встречается слово. Например, MAYDAY — и сразу подборка вопросов про бедствие.',
+  scr:`${hero()}${sc({q:'mayday',hlSearch:1,res:'<div class="sres">🚨 <b>Аварийные процедуры</b></div><div class="sres">🎯 <b>Тренировка по запросу: 6 вопр.</b></div>'})}${abBody('',{tabs:1})}${tabs('home')}${ori()}`},
 
- {eye:'Шаг 10',t:'Сертификат и общая таблица',d:'Ранг растёт от XP: Стажёр → Диспетчер УВД → Допущен к работе → Эксперт ИКАО. Сертификат можно показать, а в лидерборде видно и коллег, и команды по организациям.',
-  note:['📨','Кнопка «Пригласить коллегу» отправляет ссылку на бота — там AvEng открывается прямо в Telegram.'],
-  scr:hdr('Сертификат',{back:1,xp:'1240 XP'})+abBody(`<div class="cert"><span style="font-size:18px">🎓</span><span class="cn">Допущен к работе</span>
-   <span class="cs">1240 XP · 186 верных ответов · 9 тем</span><span class="cs">AvEng · ${VER}</span></div>
-   <div class="qs">🏆 Лидерборд · команды</div>
-   <div class="lbrow"><span class="n">1</span><span class="g">Сомон Эйр</span><span class="x">2310</span></div>
-   <div class="lbrow"><span class="n">2</span><span class="g">АГА · ОВД</span><span class="x">1240</span></div>
-   <div class="mb sec">📨 Пригласить коллегу</div>`)}
+ {eye:'Шаг 10',t:'Ори подскажет, что дальше',d:'Снежный барс Ори в правом нижнем углу следит за вашим прогрессом и предлагает следующий шаг: вопрос дня, работу над ошибками, экзамен на время или вызов коллеге. В его подсказке — чат с Ори в Telegram и кнопка «Сообщить об ошибке или пожелание».',
+  note:['📅','«Вопрос дня» на главной — один на весь день для вашей роли. Это хорошая разминка на 30 секунд.'],
+  scr:abBody(`<div class="pr cards">${promo('Игра','','<i>🎙️</i>','Живой эфир: смена TJK101')}${promo('Ори','c',`<img src="${ORI}" alt="">`,'Ори подскажет, с чего начать')}</div>
+   <div class="dq"><div class="dh"><span>📅 Вопрос дня</span><span>26.10</span></div><div class="dt">Как правильно передать эшелон 100 (FL100)?</div><span class="dg">Ответить →</span></div>`,{tabs:1})
+   +opop('На повторение: 7. Разберём ошибки — так запоминается лучше всего.','Работа над ошибками','act')+tabs('home')+ori(1)},
+
+ {eye:'Шаг 11',t:'Прогресс: ошибки, ачивки, сертификат',d:'Вкладка «Прогресс» собирает всё, что копится: ранг и цель дня, работу над ошибками (верный ответ убирает вопрос из списка), ачивки, статистику по темам, лидерборд и сертификат. Ранг растёт от XP: Стажёр → Диспетчер УВД → Допущен к работе → Эксперт ИКАО.',
+  scr:abBody(`<div class="pgh">Прогресс</div>${rank('Допущен к работе','Level 4',64,'1240 XP')}${daily(14)}
+   <div class="lg">${lr('🧯','Работа над ошибками','7 на повторение',{hl:1})}${lr('🏅','Ачивки','4 / 9')}${lr('📊','Статистика','Точность по темам')}${lr('🏆','Лидерборд','Игроки и команды')}${lr('🎓','Сертификат о прохождении','Ранг, XP и точность')}</div>`,{tabs:1})+tabs('prog','prog')+ori()},
+
+ {eye:'Шаг 12',t:'«Ещё»: доступ, помощь, настройки',d:'Во вкладке «Ещё» — ваш доступ и ввод кода организации, этот проводник, чат с Ори, сообщение об ошибке, язык, звук и голос, справочник и «Пригласить коллегу».',
+  note:['📨','«Пригласить коллегу» отправляет ссылку на бота — там AvEng открывается прямо в Telegram.'],
+  scr:abBody(`<div class="pgh">Ещё</div><div class="lh">Помощь</div>
+   <div class="lg">${lr('📘','Как заниматься — проводник','Пошаговая инструкция')}${lr(`<img src="${ORIF}" alt="" style="width:13px;border-radius:50%;background:#a9c6de">`,'Чат с Ори','Вопросы и поддержка в Telegram')}${lr('🐞','Сообщить об ошибке','Или предложить идею')}</div>
+   <div class="lh">Настройки</div>
+   <div class="lg">${lr('🌐','Язык','',{right:'<div class="lgs"><span class="on">Рус</span><span>Тоҷикӣ</span><span>Eng</span></div>'})}${lr('⚙️','Настройки','Звук, голос, роль')}</div>
+   <div class="lh">О приложении</div><div class="lg">${lr('📖','Справочник','')}${lr('📨','Пригласить коллегу','',{hl:1})}</div>`,{tabs:1})+tabs('more','more')}
 ],
 
 exam:[
- {eye:'Шаг 1',t:'Введите код организации',d:'Аттестация идёт по полному банку вопросов, поэтому сначала нужен код: он открывает все 227 вопросов и закрытые режимы.',
+ {eye:'Шаг 1',t:'Введите код организации',d:'Аттестация идёт по полному банку вопросов, поэтому сначала нужен код: он открывает все 227 вопросов и закрытые режимы. Ввести код — вкладка «Ещё» → «Ввести код организации» или кнопка «Ввести код» на главном экране.',
   note:['🏢','Код выдаёт ваша организация. У него есть срок: после окончания курс снова станет демо-версией.'],
   scr:hdr('Полный доступ',{back:1})+abBody(`<div class="qc" style="text-align:center"><span style="font-size:22px">✈🔓</span>
    <div class="qt">Полный курс AvEng</div>
    <div class="qs">227 вопросов по 13 темам, радиообмен, аудирование и экзамен ELPET/TEA.</div>
    <div class="inp ph">Код организации</div>
-   <div class="mb hl mid">Разблокировать</div></div>`)},
+   <div class="mb hl mid">Разблокировать</div></div>`,{tabs:1})+tabs('more')},
 
  {eye:'Шаг 2',t:'Проверьте роль',d:'Роль задаёт набор тем аттестации. У диспетчера это фразеология, квитирование, метео, аварийные и координация; у пилота вместо координации — радиообмен с позиции экипажа.',
   note:['⚠️','Роль выбирают до аттестации: сменить её на экзамене уже нельзя.',true],
-  scr:abBody(`<div class="licbar" style="border-color:var(--app-green);background:rgba(39,224,160,.1)"><span class="lt">✅ Полный доступ · Сомон Эйр · до 2027-06-30</span></div>
-   ${roles('Пилот',1)}${rank('Диспетчер УВД','Level 3–4',62,'640 XP')}`)},
+  scr:`${hero()}${sc({role:'Пилот',hlRole:1})}${abBody(`<div class="licbar" style="border-color:var(--app-green);background:rgba(39,224,160,.1)"><span class="lt">✅ Полный доступ · Сомон Эйр · до 2027-06-30</span></div>${rank('Диспетчер УВД','Level 3–4',62,'640 XP')}`,{tabs:1})}${tabs('home')}${ori()}`},
 
- {eye:'Шаг 3',t:'Прогоните экзамен на время',d:'«Экзамен на время» — та же механика, что на аттестации: 15 вопросов вашей роли, 20 секунд на каждый. Хорошая разминка накануне.',
+ {eye:'Шаг 3',t:'Прогоните экзамен на время',d:'«Экзамен на время» — та же механика, что на аттестации: 15 вопросов вашей роли, 20 секунд на каждый. Он во вкладке «Разделы» → «Проверка» — хорошая разминка накануне.',
   scr:hdr('Экзамен на время',{back:1,xp:'640 XP'})+abBody(`${hud(9,15,3)}
    <div class="qc"><div class="qt">QNH 1013 — как это передаётся в эфире?</div>
    <div class="opt">QNH ONE THOUSAND THIRTEEN</div><div class="opt hl">QNH ONE ZERO ONE TREE</div>
    <div class="opt">QNH TEN THIRTEEN</div></div>`)},
 
- {eye:'Шаг 4',t:'Откройте «Аттестацию»',d:'Это отдельная плитка — проктор-экзамен с допуском экзаменатора и справкой по итогу. ELPET/TEA рядом — это самооценка, не аттестация.',
-  scr:abBody(`${roles('Пилот')}
-   <div class="tiles">${tile('📋','Экзамен ELPET / TEA','6 критериев LPR')}${tile('📝','Аттестация','Допуск экзаменатора + справка',{hl:1})}${tile('⏱️','Экзамен на время','15 вопросов · 20 с')}${tile('🧯','Работа над ошибками','3 на повторение')}</div>`)},
+ {eye:'Шаг 4',t:'Откройте вкладку «Аттестация»',d:'Аттестация — отдельная вкладка в нижней панели: проктор-экзамен с допуском экзаменатора и справкой по итогу. ELPET/TEA в «Разделах» — самооценка, не аттестация.',
+  scr:home({role:'Пилот',hlTab:'exam',body:rank('Диспетчер УВД','Level 3–4',62,'640 XP')+daily(9)})},
 
  {eye:'Шаг 5',t:'Заполните данные',d:'ФИО, телефон или Telegram, организация и подразделение. По телефону экзаменатор понимает, кто просит код; в справку он не попадает. Организация выбирается из списка; если вашей нет — «Другая организация».',
   note:['👆','Кнопка «Запросить допуск» включится, только когда заполнены все четыре поля.'],
@@ -386,27 +476,27 @@ exam:[
    <div class="inp">+992 90 123 45 67</div>
    <div class="inp">Сомон Эйр (Somon Air)</div>
    <div class="inp">Лётный отряд · второй пилот</div>
-   <div class="mb hl mid">Запросить допуск</div></div>`)},
+   <div class="mb hl mid">Запросить допуск</div></div>`,{tabs:1})+tabs('exam')},
 
  {eye:'Шаг 6',t:'Получите код у экзаменатора',d:'Запрос уходит экзаменатору в Telegram вместе с вашими данными и телефоном. Он называет одноразовый код — введите его и начинайте.',
   note:['📵','Код действует на один заход. Вышли из экзамена — нужен новый.'],
   scr:hdr('Аттестация',{back:1,xp:'640 XP'})+abBody(`<div class="qc"><span class="badge g">🎓 Проктор-экзамен</span>
    <div class="why">Запрос №418 отправлен экзаменатору. Попросите у него код допуска.</div>
    <div class="inp ph">Код от экзаменатора</div>
-   <div class="mb hl mid">Начать аттестацию</div></div>`)},
+   <div class="mb hl mid">Начать аттестацию</div></div>`,{tabs:1})+tabs('exam')},
 
- {eye:'Шаг 7',t:'Идёт экзамен',d:'20 вопросов, общий таймер 15 минут и 45 секунд на каждый вопрос. Не ответили за 45 секунд — вопрос засчитывается как пропущенный и экзамен идёт дальше.',
+ {eye:'Шаг 7',t:'Идёт экзамен',d:'20 вопросов, общий таймер 15 минут и 45 секунд на каждый вопрос. Не ответили за 45 секунд — вопрос засчитывается как пропущенный и экзамен идёт дальше. Нижней панели и Ори на экзамене нет — случайно уйти с него нельзя.',
   note:['⚠️','Уходы из вкладки считаются и попадают в отчёт экзаменатору. Копирование на экзамене отключено.',true],
   scr:hdr('Аттестация · 12/20',{xp:'640 XP',clock:'⏱ 7:42'})+abBody(`<div class="hud"><span>⏳ 31 c</span><span class="sp"></span><span>⚠ уходов: 0</span></div>
    <div class="qc"><div class="qt">Экипаж передал MAYDAY. Какой код ответчика соответствует бедствию?</div>
    <div class="opt">7500</div><div class="opt hl">7700</div><div class="opt">7600</div></div>`)},
 
- {eye:'Шаг 8',t:'Справка и журнал',d:'Результат сразу уходит экзаменатору и в общую таблицу управления. На экране — справка с вашими данными и процентом; все попытки остаются в журнале аттестаций.',
+ {eye:'Шаг 8',t:'Справка и журнал',d:'Результат сразу уходит экзаменатору и в общую таблицу управления. На экране — справка с вашими данными и процентом; все попытки остаются во вкладке «Прогресс» → «Журнал аттестаций».',
   note:['📄','Справку можно показать с экрана или распечатать через «Поделиться» в браузере.'],
-  scr:hdr('Результат аттестации',{back:1,xp:'820 XP'})+abBody(`<div class="score"><b>85 %</b><span>17 из 20 · проходной 75 %</span></div>
+  scr:hdr('Аттестация',{back:1,xp:'820 XP'})+abBody(`<div class="score"><b>85 %</b><span>17 из 20 · проходной 75 %</span></div>
    <div class="cert"><span class="cn">Аттестация пройдена</span><span class="cs">Саидов Нурулло Азизович</span>
    <div class="cs">Сомон Эйр · Лётный отряд · второй пилот</div><span class="cs">13.10.2026 · AvEng ${VER}</span></div>
-   <div class="mb sec">📋 Журнал аттестаций</div>`)}
+   <div class="mb sec">📋 Журнал аттестаций</div>`,{tabs:1})+tabs('exam','prog')}
 ]
 };
 
