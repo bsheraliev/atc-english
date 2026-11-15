@@ -1,0 +1,17 @@
+name: Ворота
+# Проверка перед слиянием: iPhone-риски (Telegram подменяет глобальные имена, старый Safari,
+# пустой экран при ошибке) + ключи и закрытые файлы в репозитории. Красный — не сливать.
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm i --no-save --no-package-lock acorn@8
+      - run: node tools/gate-pwa.cjs .
